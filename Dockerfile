@@ -33,4 +33,4 @@ COPY --from=builder /app .
 EXPOSE ${PORT}
 
 # Run the compiled server
-CMD ["node", "bin/server.js"]
+CMD ["npm", "run", "start"]
