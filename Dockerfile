@@ -1,36 +1,44 @@
-# Stage 1: Install dependencies and build
+# syntax=docker/dockerfile:1
+
+### Stage 1: install deps ###
+FROM node:22-alpine AS deps
+
+WORKDIR /app
+# only copy package manifests (cache deps install)
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+
+### Stage 2: build ###
 FROM node:22-alpine AS builder
 
-# allow build-time override of the port (default: 3333)
 ARG PORT=3333
+ENV NODE_ENV=development
 
-# Create app directory
 WORKDIR /app
-
-# Install dependencies
-COPY package.json package-lock.json* ./
-RUN npm ci --force
-
-# Copy source and build
+# bring in deps
+COPY --from=deps /app/node_modules ./node_modules
+# copy source & build
 COPY . .
 RUN npm run build
 
-# Stage 2: Production image
-FROM node:22-alpine
+### Stage 3: production image ###
+FROM node:22-alpine AS runner
 
 ARG PORT=3333
 ENV PORT=${PORT}
-# Only production dependencies
 ENV NODE_ENV=production
 
 WORKDIR /app
-
-# Copy built assets and node_modules
+# copy build output
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app .
 
-# Expose AdonisJS default port
+# remove any dev deps that snuck in
+RUN npm prune --production
+
+# drop to non-root for safety
+USER node
+
 EXPOSE ${PORT}
 
-# Run the compiled server
 CMD ["npm", "run", "start"]
