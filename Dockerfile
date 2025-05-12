@@ -6,7 +6,7 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 # only copy package manifests (cache deps install)
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts --force
 
 ### Stage 2: build ###
 FROM node:22-alpine AS builder
@@ -34,7 +34,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app .
 
 # remove any dev deps that snuck in
-RUN npm prune --production
+RUN npm prune --production --force
 
 # drop to non-root for safety
 USER node
