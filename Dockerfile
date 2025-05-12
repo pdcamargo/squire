@@ -1,6 +1,9 @@
 # Stage 1: Install dependencies and build
 FROM node:22-alpine AS builder
 
+# allow build-time override of the port (default: 3333)
+ARG PORT=3333
+
 # Create app directory
 WORKDIR /app
 
@@ -15,17 +18,19 @@ RUN npm run build
 # Stage 2: Production image
 FROM node:22-alpine
 
-WORKDIR /app
-
+ARG PORT=3333
+ENV PORT=${PORT}
 # Only production dependencies
 ENV NODE_ENV=production
+
+WORKDIR /app
 
 # Copy built assets and node_modules
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app .
 
 # Expose AdonisJS default port
-EXPOSE 3333
+EXPOSE ${PORT}
 
 # Run the compiled server
 CMD ["node", "bin/server.js"]
