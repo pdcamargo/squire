@@ -17,4 +17,5 @@ services:
       - APP_KEY=${APP_KEY:-}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - SESSION_DRIVER=${SESSION_DRIVER:-cookie}
-    command: node build/bin/server.js
+    working_dir: /app/build
+    command: npm run start

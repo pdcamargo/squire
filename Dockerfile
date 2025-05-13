@@ -54,4 +54,4 @@ USER node
 
 EXPOSE ${PORT}
 
-CMD ["node", "build/bin/server.js"]
+CMD ["sh", "-c", "cd build && npm run start"]
