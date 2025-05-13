@@ -36,7 +36,7 @@ export default class DashboardController {
   }
 
   public async home({ inertia }: HttpContext) {
-    return inertia.render('dashboard/home', {
+    return inertia.render('home', {
       title: 'Dashboard',
       description: 'Dashboard description',
       manifest: {

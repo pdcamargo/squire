@@ -1,9 +1,9 @@
-import type DashboardController from '#controllers/dashboard_controller'
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head } from '@inertiajs/react'
 
-type PageProps = InferPageProps<DashboardController, 'home'>
+import type DashboardController from '../../app/controllers/dashboard_controller'
 
+type PageProps = InferPageProps<DashboardController, 'home'>
 export default function Home({ manifest }: PageProps) {
   return (
     <>
