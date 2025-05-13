@@ -42,6 +42,13 @@ export default class AppFS {
     }
   }
 
+  public static async checkPathsExist(filePaths: string[]) {
+    const results = await Promise.all(
+      filePaths.map(async (filePath) => this.checkPathExists(filePath))
+    )
+    return results.every((result) => result)
+  }
+
   public static async getDirContents(dirPath: string) {
     try {
       const dirents = await fs.readdir(dirPath, { withFileTypes: true })

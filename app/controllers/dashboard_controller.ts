@@ -6,6 +6,7 @@ import AppPath from '#helpers/app_path'
 import fs from 'node:fs/promises'
 import { createWorldSchema } from '#validators/world'
 import WorldCreator from '#helpers/world_creator'
+import AppFS from '#helpers/app_fs'
 
 // import db from '@adonisjs/lucid/services/db'
 
@@ -36,11 +37,24 @@ export default class DashboardController {
   }
 
   public async home({ inertia }: HttpContext) {
+    await AppPath.ensureAppStructure()
+
     return inertia.render('home', {
       title: 'Dashboard',
       description: 'Dashboard description',
       manifest: {
         paths: AppPath.all,
+        structure: {
+          data: await AppFS.checkPathExists(AppPath.data),
+          config: await AppFS.checkPathExists(AppPath.config),
+          cache: await AppFS.checkPathExists(AppPath.cache),
+          log: await AppFS.checkPathExists(AppPath.log),
+          temp: await AppFS.checkPathExists(AppPath.temp),
+          worlds: await AppFS.checkPathExists(AppPath.worlds),
+          systems: await AppFS.checkPathExists(AppPath.systems),
+          modules: await AppFS.checkPathExists(AppPath.modules),
+          assets: await AppFS.checkPathExists(AppPath.assets),
+        },
       },
     })
   }
