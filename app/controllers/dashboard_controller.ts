@@ -35,6 +35,16 @@ export default class DashboardController {
     })
   }
 
+  public async home({ inertia }: HttpContext) {
+    return inertia.render('dashboard/home', {
+      title: 'Dashboard',
+      description: 'Dashboard description',
+      manifest: {
+        paths: AppPath.all,
+      },
+    })
+  }
+
   public async index({ inertia }: HttpContext) {
     // const pg = db.manager.patch('world', {
     //   connection: {

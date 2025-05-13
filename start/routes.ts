@@ -8,7 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
-router.on('/').renderInertia('home')
+router.get('/', '#controllers/dashboard_controller.home')
 
 // SSR
 router.get('/dashboard', '#controllers/dashboard_controller.index')
