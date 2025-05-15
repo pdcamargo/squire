@@ -8,16 +8,14 @@ import path from 'node:path'
 import AppPath from '#helpers/app_path'
 import AppFS from './app_fs.js'
 import Utils from './utils.js'
+import { WorldType } from '#validators/world'
+import { SystemType } from '#validators/system'
 
 const worldManifestTemplate = `
 {
   "id": "{{ world.id }}",
   "name": "{{ world.name }}",
   "description": "{{ world.description }}",
-  "compatibility": {
-    "min": "{{ world.compatibility.min }}",
-    "max": "{{ world.compatibility.max }}"
-  },
   "system": "{{ world.system }}",
   "lastPlayed": "{{ world.lastPlayed }}",
   "lastUpdated": "{{ world.lastUpdated }}"
@@ -28,10 +26,6 @@ type WorldManifest = {
   id: string
   name: string
   description: string
-  compatibility: {
-    min: string
-    max: string
-  }
   system: string
   lastPlayed: string
   lastUpdated: string
@@ -43,11 +37,11 @@ type CreateWorldArgs = {
   system: string
 }
 
-export default class WorldCreator {
+export default class WorldHelper {
   public static async listWorlds() {
     await AppPath.ensureAppStructure()
 
-    const worlds = await AppFS.getDirContents(AppPath.worlds)
+    const worlds = await AppFS.getDirFolders(AppPath.worlds)
 
     const worldManifests = await Promise.all(
       worlds.map(async (world: any) => {
@@ -68,14 +62,23 @@ export default class WorldCreator {
 
     const filteredWorlds = await Promise.all(
       res.map(async (world) => {
-        if (!world.compatibility || !world.system) return null
+        if (!world || !world.system) return null
 
         if (!(await AppPath.checkSystemExists(world.system))) return null
 
+        const systemManifest = await AppFS.readJson<{
+          compatibility: {
+            min: string
+            max: string
+          }
+        }>(path.join(AppPath.systemPath(world.system), 'system.json'))
+
+        if (!systemManifest) return null
+
         return Utils.isVersionInRange(
           FAKE_CURRENT_VERSION,
-          world.compatibility.min,
-          world.compatibility.max
+          systemManifest.compatibility.min,
+          systemManifest.compatibility.max
         )
           ? world
           : null
@@ -114,10 +117,6 @@ export default class WorldCreator {
         id: finalSlug,
         name,
         description: description || '',
-        compatibility: {
-          min: '1.0.0',
-          max: '1.3.0',
-        },
         system,
         lastPlayed: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
@@ -152,5 +151,115 @@ export default class WorldCreator {
       name,
       slug: finalSlug,
     }
+  }
+
+  public static async readWorldAndSystemManifest(worldName: string) {
+    if (!(await AppPath.checkWorldExists(worldName))) {
+      return null
+    }
+
+    const worldPath = AppPath.worldPath(worldName)
+    const manifest = await AppFS.readJson<WorldType>(AppPath.join(worldPath, 'world.json'))
+
+    if (!manifest) {
+      return null
+    }
+
+    const systemPath = AppPath.systemPath(manifest.system)
+    const systemManifest = await AppFS.readJson<SystemType>(path.join(systemPath, 'system.json'))
+    if (!systemManifest) {
+      return null
+    }
+    const FAKE_CURRENT_VERSION = '1.0.0'
+
+    if (
+      !Utils.isVersionInRange(
+        FAKE_CURRENT_VERSION,
+        systemManifest.compatibility.min,
+        systemManifest.compatibility.max
+      )
+    ) {
+      return null
+    }
+    return {
+      world: manifest,
+      system: systemManifest,
+    }
+  }
+
+  public static async loadSystemViews(system: SystemType) {
+    const viewsBasePath = system.paths?.views || './views'
+    const viewsPath = path.join(AppPath.systemPath(system.id), viewsBasePath)
+
+    const paths = await AppFS.getDirContent(viewsPath)
+
+    // everything that is a handlebars (.hbs) file
+    const handlebarsFiles = paths.filter((file) => file.endsWith('.hbs'))
+
+    // we load the content of the handlebars files and return an object with the file name as key and the content as value
+    const handlebarsContents = await Promise.all(
+      handlebarsFiles
+        .map(async (file) => {
+          const content = await AppFS.readFile(path.resolve(file))
+
+          if (!content) {
+            return null
+          }
+
+          let fileName = file.replace('.hbs', '').replace(viewsPath, '')
+
+          // we remove the leading slash if it exists
+          if (fileName.startsWith('\\')) {
+            fileName = fileName.slice(1)
+          }
+
+          // replace all \ with /
+          fileName = fileName.replace(/\\/g, '/')
+
+          return {
+            [fileName]: content,
+          }
+        })
+        .filter((file) => file !== null)
+    )
+
+    const nonNullHandlebarsContents = handlebarsContents.filter((file) => file !== null) as Record<
+      string,
+      string
+    >[]
+
+    // we merge the objects into one
+    const mergedContents = nonNullHandlebarsContents.reduce((acc, curr) => {
+      return { ...acc, ...curr }
+    }, {})
+    // we return the merged object
+    return mergedContents
+  }
+
+  public static async runWorldMigrations(worldName: string) {
+    const manifests = await this.readWorldAndSystemManifest(worldName)
+
+    if (!manifests) {
+      return null
+    }
+
+    await AppFS.ensureDirExists(path.join(AppPath.worldPath(worldName), 'data'))
+
+    db.manager.patch('world', {
+      client: 'better-sqlite3',
+      connection: {
+        filename: path.join(AppPath.worldPath(worldName), 'data', 'world.db'),
+      },
+    })
+
+    const migrator = new MigrationRunner(db, app, {
+      direction: 'up',
+      dryRun: false,
+      connectionName: 'world',
+    })
+
+    await migrator.run()
+
+    return migrator.migratedFiles
   }
 }

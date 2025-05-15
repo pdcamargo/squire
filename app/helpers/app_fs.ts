@@ -1,4 +1,6 @@
 import fs from 'node:fs/promises'
+import { createReadStream } from 'node:fs'
+import path from 'node:path'
 
 export default class AppFS {
   /**
@@ -49,7 +51,7 @@ export default class AppFS {
     return results.every((result) => result)
   }
 
-  public static async getDirContents(dirPath: string) {
+  public static async getDirFolders(dirPath: string) {
     try {
       const dirents = await fs.readdir(dirPath, { withFileTypes: true })
 
@@ -59,6 +61,31 @@ export default class AppFS {
         .map((dirent) => `${dirPath}/${dirent}`)
     } catch {
       return []
+    }
+  }
+
+  public static async getDirContent(dirPath: string) {
+    try {
+      const dirents = await fs.readdir(dirPath, { withFileTypes: true, recursive: true })
+
+      return dirents.map((dirent) => {
+        return path.join(dirent.parentPath, dirent.name)
+      })
+    } catch {
+      return []
+    }
+  }
+
+  public static async readFile(filePath: string) {
+    if (!this.checkPathExists(filePath)) {
+      return null
+    }
+
+    try {
+      const data = await fs.readFile(filePath, 'utf-8')
+      return data
+    } catch {
+      return null
     }
   }
 
@@ -78,5 +105,18 @@ export default class AppFS {
 
   public static async writeFile(filePath: string, data: string) {
     await fs.writeFile(filePath, data, 'utf-8')
+  }
+
+  public static async isDirectory(filePath: string) {
+    try {
+      const stat = await fs.stat(filePath)
+      return stat.isDirectory()
+    } catch {
+      return false
+    }
+  }
+
+  public static createReadStream(filePath: string) {
+    return createReadStream(filePath)
   }
 }
