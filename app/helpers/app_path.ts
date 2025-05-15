@@ -164,7 +164,7 @@ export default class AppPath {
         min: string
         max: string
       }
-    }>(path.join(finalPath, 'world.json'))
+    }>(path.join(finalPath, 'system.json'))
 
     if (!manifest) {
       return false
@@ -177,5 +177,30 @@ export default class AppPath {
       manifest.compatibility.min,
       manifest.compatibility.max
     )
+  }
+
+  public static async checkWorldExists(worldName: string) {
+    const finalPath = this.worldPath(worldName)
+
+    const exists = await AppFS.checkPathExists(finalPath)
+
+    if (!exists) {
+      return false
+    }
+
+    const manifest = await AppFS.readJson<{
+      id: string
+      name: string
+      description: string
+      system: string
+      lastPlayed: string
+      lastUpdated: string
+    }>(path.join(finalPath, 'world.json'))
+
+    return !!manifest
+  }
+
+  public static join(...paths: string[]) {
+    return path.join(...paths)
   }
 }

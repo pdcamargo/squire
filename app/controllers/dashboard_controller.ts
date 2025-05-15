@@ -5,7 +5,7 @@ import AppPath from '#helpers/app_path'
 
 import fs from 'node:fs/promises'
 import { createWorldSchema } from '#validators/world'
-import WorldCreator from '#helpers/world_creator'
+import WorldHelper from '#helpers/world_creator'
 import AppFS from '#helpers/app_fs'
 
 // import db from '@adonisjs/lucid/services/db'
@@ -16,7 +16,7 @@ export default class DashboardController {
 
     try {
       return {
-        data: await WorldCreator.createWorld(payload),
+        data: await WorldHelper.createWorld(payload),
         status: 201,
       }
     } catch {
@@ -31,7 +31,7 @@ export default class DashboardController {
       title: 'Worlds',
       description: 'Worlds description',
       worlds: inertia.defer(() => {
-        return WorldCreator.listWorlds()
+        return WorldHelper.listWorlds()
       }),
     })
   }
@@ -66,11 +66,7 @@ export default class DashboardController {
     //   }
     // })
 
-    console.log(AppPath.all)
-
     const files = await fs.readdir(AppPath.data, { recursive: false, withFileTypes: true })
-
-    console.log('Files:', files)
 
     let users = await User.all()
 

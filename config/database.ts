@@ -20,7 +20,6 @@ const dbConfig = defineConfig({
       connection: {
         filename: app.tmpPath('worldDb.sqlite3'),
       },
-      useNullAsDefault: true,
       migrations: {
         naturalSort: true,
         paths: ['database/world/migrations'],
