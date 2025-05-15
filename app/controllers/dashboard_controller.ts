@@ -3,7 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import AppPath from '#helpers/app_path'
 
-import fs from 'node:fs/promises'
+// import fs from 'node:fs/promises'
 import { createWorldSchema } from '#validators/world'
 import WorldHelper from '#helpers/world_creator'
 import AppFS from '#helpers/app_fs'
@@ -66,7 +66,7 @@ export default class DashboardController {
     //   }
     // })
 
-    const files = await fs.readdir(AppPath.data, { recursive: false, withFileTypes: true })
+    // const files = await fs.readdir(AppPath.data, { recursive: false, withFileTypes: true })
 
     let users = await User.all()
 
