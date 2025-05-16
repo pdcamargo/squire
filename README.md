@@ -1,73 +1,81 @@
 # Squire Project
 
-Squire is a TypeScript-based web application built with AdonisJS and Inertia.js. It provides a robust backend framework combined with a modern React-based frontend. This project is designed to deliver a seamless user experience with features like authentication, dynamic dashboards, and runtime interactions.
+## Overview
 
-## Features
+Squire is a modern web application built using AdonisJS with Inertia.js and React. It leverages a robust backend and a dynamic frontend to deliver a seamless user experience. The project is structured to ensure scalability, maintainability, and ease of contribution.
 
-- **AdonisJS Backend**: A powerful backend framework with controllers, middleware, and models.
-- **Inertia.js Frontend**: A modern React-based frontend with reusable UI components.
-- **Authentication**: Middleware for handling authentication and guest access.
-- **Dynamic Dashboards**: Interactive pages for managing user data and settings.
-- **Runtime Interactions**: Real-time features for enhanced user engagement.
+### Key Features
+
+- **AdonisJS Backend**: A powerful Node.js framework for building scalable applications.
+- **Inertia.js Integration**: Bridges the gap between server-side and client-side rendering.
+- **React Frontend**: Utilizes React 19+ for building dynamic and interactive user interfaces.
+- **ShadCN/UI Components**: A collection of modern and reusable UI components.
+- **Dark Mode**: Enabled by default for a sleek and modern look.
 
 ## Project Structure
 
-- **Backend**:
+- **`app/`**: Contains backend controllers, middleware, models, and helpers.
+- **`config/`**: Configuration files for various services and settings.
+- **`database/`**: Database migrations and seeds.
+- **`inertia/`**: Frontend code, including pages, components, and styles.
+  - **`inertia/lib/components/ui/`**: Reusable UI components.
+  - **`inertia/pages/`**: Application pages rendered by Inertia.js.
+- **`public/`**: Static assets like images and icons.
+- **`resources/views/`**: Edge templates for server-side rendering.
+- **`start/`**: Application entry points and route definitions.
 
-  - `app/controllers`: Handles HTTP requests and responses.
-  - `app/middleware`: Middleware for authentication and other request handling.
-  - `app/models`: Database models for managing data.
-  - `app/validators`: Validation logic for user inputs.
-  - `config`: Configuration files for the application.
+## Contribution Guide
 
-- **Frontend**:
+### Branch Naming Pattern
 
-  - `inertia/app`: Entry point for the React application.
-  - `inertia/lib/components/ui`: Reusable UI components like buttons, forms, and tables.
-  - `inertia/pages`: Page components for different routes.
+- Use the format: `feature/<description>` for new features.
+- Use the format: `fix/<description>` for bug fixes.
+- Use the format: `chore/<description>` for maintenance tasks.
 
-- **Database**:
-  - `database/migrations`: Migration files for setting up the database schema.
+### Commit Message Pattern
 
-## Setup
+- Use prefixes like `feat`, `fix`, `chore`, `refactor`, `docs`, `style`, `test`, `build`, or `ci`.
+- Example: `feat: add user authentication`.
+
+### How to Contribute
+
+1. Fork the repository and clone it locally.
+2. Create a new branch following the naming pattern.
+3. Make your changes and commit them with a descriptive message.
+4. Push your branch to the remote repository.
+5. Create a pull request with a detailed description of your changes.
+
+## Technologies Used
+
+- **AdonisJS**: Backend framework.
+- **Inertia.js**: Middleware for server-driven SPA.
+- **React 19+**: Frontend library.
+- **ShadCN/UI**: Modern UI components.
+- **TypeScript**: Strongly typed JavaScript.
+- **Docker**: Containerization for development and deployment.
+
+## Getting Started
 
 1. Clone the repository:
-
    ```bash
    git clone https://github.com/your-repo/squire.git
-   cd squire
    ```
-
 2. Install dependencies:
-
    ```bash
-   npm install
+   npm install --legacy-peer-deps
    ```
-
-3. Set up the environment variables:
-
-   - Copy `.env.example` to `.env` and configure the necessary variables.
-
-4. Run the database migrations:
-
-   ```bash
-   node ace migration:run
-   ```
-
-5. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-## Usage
+## Documentation
 
-- Access the application at `http://localhost:3333`.
-- Use the dashboard to manage user data and settings.
-- Explore runtime features for real-time interactions.
+- **Routes**: Defined in `start/routes.ts`.
+- **Controllers**: Found in `app/controllers/`.
+- **UI Components**: Located in `inertia/lib/components/ui/`.
 
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request.
+For detailed documentation, refer to the codebase and comments.
 
 ## License
 
