@@ -1,12 +1,14 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head } from '@inertiajs/react'
 import Handlebars from 'handlebars'
 import { Globe } from 'lucide-react'
+import * as PIXI from 'pixi.js'
 
 import type RuntimeController from '#controllers/runtime_controller'
 
+import { Separator } from '@/components/ui/separator'
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +17,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -35,7 +38,7 @@ function loadScript(script: string) {
 }
 
 class SquireSDK {
-  constructor(private options: { scripts: string[] }) {
+  constructor(private options: { scripts: string[]; views: Record<string, string> }) {
     this.#init()
   }
 
@@ -44,7 +47,47 @@ class SquireSDK {
       return
     }
 
-    ;(window as any).Squire = this
+    if (this.options.views && Object.keys(this.options.views).length > 0) {
+      Object.entries(this.options.views).forEach(([name, view]) => {
+        Handlebars.registerPartial(name, view)
+      })
+    }
+
+    const app = new PIXI.Application()
+
+    const container = document.querySelector<HTMLDivElement>('[data-id="canvas-container"]')!
+
+    await app.init({
+      background: '#1d1b22',
+      resizeTo: container,
+    })
+
+    const resizeObserver = new ResizeObserver(() => {
+      app.renderer.resize(container.clientWidth, container.clientHeight)
+    })
+
+    resizeObserver.observe(container)
+
+    container.appendChild(app.canvas)
+
+    // Create and add a container to the stage
+    const c = new PIXI.Container()
+
+    app.stage.addChild(c)
+
+    // Load the bunny texture
+    const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png')
+    const bunny = new PIXI.Sprite(texture)
+
+    c.x = app.screen.width / 2
+    c.y = app.screen.height / 2
+
+    c.addChild(bunny)
+    bunny.anchor.set(0.5)
+
+    {
+      ;(window as any).Squire = this
+    }
 
     // Initialize the SDK
     await Promise.all(
@@ -63,67 +106,46 @@ class SquireSDK {
   }
 }
 
-export default function Play({
-  title,
-  description,
-  world,
-  system,
-  views,
-  user,
-  scripts,
-}: PageProps) {
+export default function Play({ title, views, scripts }: PageProps) {
   useState(() => {
     return new SquireSDK({
       scripts: scripts.map((script) => script.path),
+      views,
     })
   })
 
-  const registerPartials = useCallback(() => {
-    if (!views) {
-      return
-    }
+  // const randomRender = useMemo(() => {
+  //   if (!views) {
+  //     return ''
+  //   }
 
-    if (Object.keys(views).length === 0) {
-      return
-    }
+  //   registerPartials()
 
-    Object.entries(views).forEach(([name, view]) => {
-      Handlebars.registerPartial(name, view)
-    })
-  }, [views])
+  //   const randomView = Object.keys(views)[Math.floor(Math.random() * Object.keys(views).length)]
 
-  const randomRender = useMemo(() => {
-    if (!views) {
-      return ''
-    }
+  //   const template = Handlebars.compile(`
+  //     <div>
+  //       <h2>{{ world }}</h2>
+  //       <h3>{{ system }}</h3>
+  //       {{> ${randomView} world=world system=system }}
+  //     </div>
+  //   `)
 
-    registerPartials()
-
-    const randomView = Object.keys(views)[Math.floor(Math.random() * Object.keys(views).length)]
-
-    const template = Handlebars.compile(`
-      <div>
-        <h2>{{ world }}</h2>
-        <h3>{{ system }}</h3>
-        {{> ${randomView} world=world system=system }}
-      </div>
-    `)
-
-    const data = {
-      world: world.name,
-      system: system.name,
-    }
-    const rendered = template(data)
-    return rendered
-  }, [views, registerPartials, world.name, system.name])
+  //   const data = {
+  //     world: world.name,
+  //     system: system.name,
+  //   }
+  //   const rendered = template(data)
+  //   return rendered
+  // }, [views, registerPartials, world.name, system.name])
 
   return (
     <>
+      <Head title={title} />
+
       <SidebarProvider>
-        <Sidebar collapsible="icon" side="left">
-          <SidebarHeader>
-            <SidebarTrigger />
-          </SidebarHeader>
+        <Sidebar variant="inset" collapsible="icon" side="left">
+          <SidebarHeader></SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel>World</SidebarGroupLabel>
@@ -141,31 +163,24 @@ export default function Play({
           </SidebarContent>
           <SidebarFooter />
         </Sidebar>
-        <main>
-          <>
-            <Head title={title} />
-
-            <div className="flex flex-col items-center justify-center h-screen">
-              <h1 className="text-4xl font-bold">{title}</h1>
-              <p className="mt-4 text-lg">{description}</p>
-              <p className="mt-2 text-sm text-gray-500">
-                World: {world.name} ({world.id})
-              </p>
-              <p className="mt-2 text-sm text-gray-500">
-                System: {system.name} ({system.id})
-              </p>
-
-              <pre>
-                <code>{JSON.stringify(user, null, 2)}</code>
-              </pre>
-
-              <>
-                {console.log(views)}
-                <div dangerouslySetInnerHTML={{ __html: randomRender }} />
-              </>
+        <SidebarInset className="w-full grid h-screen grid-rows-[auto_1fr]">
+          <header className="w-full group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
+            <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
+              <h1 className="text-base font-medium">The Scene Name</h1>
             </div>
-          </>
-        </main>
+          </header>
+
+          <div className="relative overflow-hidden">
+            <div className="from-primary/20 via-background to-background absolute inset-0 z-0 bg-gradient-to-br">
+              <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] [background-size:16px_16px] dark:bg-[radial-gradient(#333_1px,transparent_1px)]"></div>
+            </div>
+            <div className="relative z-10 w-full h-full" data-id="canvas-container"></div>
+            <div className="bg-primary/10 absolute top-1/4 -left-20 h-64 w-64 rounded-full blur-3xl"></div>
+            <div className="bg-primary/10 absolute -right-20 bottom-1/4 h-64 w-64 rounded-full blur-3xl"></div>
+          </div>
+        </SidebarInset>
       </SidebarProvider>
     </>
   )
