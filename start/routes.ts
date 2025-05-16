@@ -11,7 +11,10 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 router.get('/', '#controllers/dashboard_controller.home')
 
+router.post('/:world/login', '#controllers/auth_controller.login')
 router.get('/:world/login', '#controllers/auth_controller.loginPage')
+
+router.get('/:world/play', '#controllers/runtime_controller.play').use(middleware.auth())
 
 // SSR
 router.get('/dashboard', '#controllers/dashboard_controller.index')
@@ -21,5 +24,3 @@ router.get('/dashboard/worlds', '#controllers/dashboard_controller.worlds')
 router.post('/dashboard/worlds', '#controllers/dashboard_controller.create')
 
 router.get('/assets/:world/*', '#controllers/assets_controller.show')
-
-router.get('/play/:world', '#controllers/runtime_controller.play').use(middleware.auth())
