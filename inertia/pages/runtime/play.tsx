@@ -1,18 +1,30 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Deferred, Head } from '@inertiajs/react'
 import Handlebars from 'handlebars'
+import { Globe } from 'lucide-react'
 
-import { Select, SelectContent, SelectTrigger } from '@/components/ui/select'
+import type RuntimeController from '#controllers/runtime_controller'
 
-import type RuntimeController from '../../../app/controllers/runtime_controller'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 
 type PageProps = InferPageProps<RuntimeController, 'play'>
 
-export default function Play({ title, description, world, system, views, users }: PageProps) {
-  const [loggedIn] = useState(false)
-
+export default function Play({ title, description, world, system, views, user }: PageProps) {
   const registerPartials = useCallback(() => {
     if (!views) {
       return
@@ -53,41 +65,55 @@ export default function Play({ title, description, world, system, views, users }
   }, [views, registerPartials, world.name, system.name])
 
   return (
-    <Deferred data={['users', 'views']} fallback={<div>Loading...</div>}>
-      <>
-        <Head title={title} />
-
-        {!loggedIn && users && (
-          <Select>
-            <SelectTrigger>Select an user</SelectTrigger>
-            <SelectContent>
-              {users.map((user) => (
-                <option key={user.id} value={user.username}>
-                  {user.name}
-                </option>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-
-        <div className="flex flex-col items-center justify-center h-screen">
-          <h1 className="text-4xl font-bold">{title}</h1>
-          <p className="mt-4 text-lg">{description}</p>
-          <p className="mt-2 text-sm text-gray-500">
-            World: {world.name} ({world.id})
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            System: {system.name} ({system.id})
-          </p>
-
-          <>{console.log(users)}</>
-
+    <SidebarProvider>
+      <Sidebar collapsible="icon" side="left">
+        <SidebarHeader>
+          <SidebarTrigger />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>World</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    <Globe />
+                    <span>World Item</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter />
+      </Sidebar>
+      <main>
+        <Deferred data={['views']} fallback={<div>Loading...</div>}>
           <>
-            {console.log(views)}
-            <div dangerouslySetInnerHTML={{ __html: randomRender }} />
+            <Head title={title} />
+
+            <div className="flex flex-col items-center justify-center h-screen">
+              <h1 className="text-4xl font-bold">{title}</h1>
+              <p className="mt-4 text-lg">{description}</p>
+              <p className="mt-2 text-sm text-gray-500">
+                World: {world.name} ({world.id})
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                System: {system.name} ({system.id})
+              </p>
+
+              <pre>
+                <code>{JSON.stringify(user, null, 2)}</code>
+              </pre>
+
+              <>
+                {console.log(views)}
+                <div dangerouslySetInnerHTML={{ __html: randomRender }} />
+              </>
+            </div>
           </>
-        </div>
-      </>
-    </Deferred>
+        </Deferred>
+      </main>
+    </SidebarProvider>
   )
 }
