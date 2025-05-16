@@ -22,15 +22,6 @@ const worldManifestTemplate = `
 }
 `
 
-type WorldManifest = {
-  id: string
-  name: string
-  description: string
-  system: string
-  lastPlayed: string
-  lastUpdated: string
-}
-
 type CreateWorldArgs = {
   name: string
   description?: string | null
@@ -43,49 +34,21 @@ export default class WorldHelper {
 
     const worlds = await AppFS.getDirFolders(AppPath.worlds)
 
-    const worldManifests = await Promise.all(
-      worlds.map(async (world: any) => {
-        const manifestPath = path.join(world, 'world.json')
-        const manifestExists = await AppFS.checkPathExists(manifestPath)
+    const res = await Promise.all(
+      worlds.map(async (world: string) => {
+        const manifests = await WorldHelper.readWorldAndSystemManifest(path.basename(world))
 
-        if (manifestExists) {
-          return AppFS.readJson<WorldManifest>(manifestPath)
+        if (!manifests) {
+          return null
         }
 
-        return null
+        return {
+          ...manifests,
+        } as const
       })
     )
 
-    const res = worldManifests.filter((manifest: any) => manifest !== null) as WorldManifest[]
-
-    const FAKE_CURRENT_VERSION = '1.0.0'
-
-    const filteredWorlds = await Promise.all(
-      res.map(async (world) => {
-        if (!world || !world.system) return null
-
-        if (!(await AppPath.checkSystemExists(world.system))) return null
-
-        const systemManifest = await AppFS.readJson<{
-          compatibility: {
-            min: string
-            max: string
-          }
-        }>(path.join(AppPath.systemPath(world.system), 'system.json'))
-
-        if (!systemManifest) return null
-
-        return Utils.isVersionInRange(
-          FAKE_CURRENT_VERSION,
-          systemManifest.compatibility.min,
-          systemManifest.compatibility.max
-        )
-          ? world
-          : null
-      })
-    )
-
-    return filteredWorlds.filter((world): world is WorldManifest => world !== null)
+    return res.filter((world): world is { world: WorldType; system: SystemType } => world !== null)
   }
 
   public static async createWorld({ name, description, system }: CreateWorldArgs) {
@@ -154,10 +117,6 @@ export default class WorldHelper {
   }
 
   public static async readWorldAndSystemManifest(worldName: string) {
-    if (!(await AppPath.checkWorldExists(worldName))) {
-      return null
-    }
-
     const worldPath = AppPath.worldPath(worldName)
     const manifest = await AppFS.readJson<WorldType>(AppPath.join(worldPath, 'world.json'))
 

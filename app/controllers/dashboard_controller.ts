@@ -55,6 +55,7 @@ export default class DashboardController {
           modules: await AppFS.checkPathExists(AppPath.modules),
           assets: await AppFS.checkPathExists(AppPath.assets),
         },
+        worlds: await WorldHelper.listWorlds(),
       },
     })
   }
