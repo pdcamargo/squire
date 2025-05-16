@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 type ScriptProps = React.DetailedHTMLProps<
   React.ScriptHTMLAttributes<HTMLScriptElement>,
@@ -9,32 +9,16 @@ type ScriptProps = React.DetailedHTMLProps<
   onLoaded?: () => void
 }
 
-const Script: React.FC<ScriptProps> = ({ path, enabled = true, onLoaded, ...props }) => {
-  useEffect(() => {
-    if (!enabled) return
+const ScriptLoader = ({ path, onLoaded, ...props }: Omit<ScriptProps, 'enabled'>) => {
+  return <script src={path} {...props} data-id={path} />
+}
 
-    const script = document.createElement('script')
-    script.src = path
-    script.async = true
+const Script = ({ path, enabled = true, onLoaded, ...props }: ScriptProps) => {
+  if (!enabled) {
+    return null
+  }
 
-    Object.entries(props).forEach(([key, value]) => {
-      if (value !== undefined) {
-        script.setAttribute(key, value as string)
-      }
-    })
-
-    script.onload = () => {
-      if (onLoaded) onLoaded()
-    }
-
-    document.body.appendChild(script)
-
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [path, enabled, onLoaded, props])
-
-  return null
+  return <ScriptLoader path={path} onLoaded={onLoaded} {...props} />
 }
 
 export { Script }

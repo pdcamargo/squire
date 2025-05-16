@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { InferPageProps } from '@adonisjs/inertia/types'
-import { Deferred, Head } from '@inertiajs/react'
+import { Head } from '@inertiajs/react'
 import Handlebars from 'handlebars'
 import { Globe } from 'lucide-react'
 
@@ -24,7 +24,60 @@ import {
 
 type PageProps = InferPageProps<RuntimeController, 'play'>
 
-export default function Play({ title, description, world, system, views, user }: PageProps) {
+function loadScript(script: string) {
+  return new Promise((resolve, reject) => {
+    const scriptElement = document.createElement('script')
+    scriptElement.src = script
+    scriptElement.onload = () => resolve(true)
+    scriptElement.onerror = () => reject(new Error(`Failed to load script: ${script}`))
+    document.body.appendChild(scriptElement)
+  })
+}
+
+class SquireSDK {
+  constructor(private options: { scripts: string[] }) {
+    this.#init()
+  }
+
+  #init = async () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    ;(window as any).Squire = this
+
+    // Initialize the SDK
+    await Promise.all(
+      this.options.scripts.map((script) => {
+        return loadScript(script)
+          .then(() => {
+            console.log(`Script ${script} loaded`)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      })
+    )
+
+    console.log('Squire SDK initialized')
+  }
+}
+
+export default function Play({
+  title,
+  description,
+  world,
+  system,
+  views,
+  user,
+  scripts,
+}: PageProps) {
+  useState(() => {
+    return new SquireSDK({
+      scripts: scripts.map((script) => script.path),
+    })
+  })
+
   const registerPartials = useCallback(() => {
     if (!views) {
       return
@@ -65,30 +118,30 @@ export default function Play({ title, description, world, system, views, user }:
   }, [views, registerPartials, world.name, system.name])
 
   return (
-    <SidebarProvider>
-      <Sidebar collapsible="icon" side="left">
-        <SidebarHeader>
-          <SidebarTrigger />
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>World</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <Globe />
-                    <span>World Item</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter />
-      </Sidebar>
-      <main>
-        <Deferred data={['views']} fallback={<div>Loading...</div>}>
+    <>
+      <SidebarProvider>
+        <Sidebar collapsible="icon" side="left">
+          <SidebarHeader>
+            <SidebarTrigger />
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>World</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton>
+                      <Globe />
+                      <span>World Item</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter />
+        </Sidebar>
+        <main>
           <>
             <Head title={title} />
 
@@ -112,8 +165,8 @@ export default function Play({ title, description, world, system, views, user }:
               </>
             </div>
           </>
-        </Deferred>
-      </main>
-    </SidebarProvider>
+        </main>
+      </SidebarProvider>
+    </>
   )
 }
