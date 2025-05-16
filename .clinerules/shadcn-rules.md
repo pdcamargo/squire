@@ -38,3 +38,5 @@ router
   .get('/:dynamic/other-route-part', '#controllers/my_controller.myMethod')
   .use(middleware.auth())
 ```
+
+Component file names should be dash-case.tsx, and the folder structure should be the same as the component name. For example, if you have a component called `MyComponent`, it should be placed in `inertia\lib\components\ui\my-component.tsx`, we don't need a component folder with the same name. They should all be defined in a const and arrow function, and we don't export default. In the end of the file we always have export { TheComponent }, without index file. File names for components should always be on this pattern: `my-component.tsx`, and the folder structure should be the same as the component name (all lowercase separated by dash)

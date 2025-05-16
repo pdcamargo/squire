@@ -236,6 +236,27 @@ export default class WorldHelper {
     return mergedContents
   }
 
+  public static async loadSystemScripts(system: SystemType, world: WorldType) {
+    const scriptsBasePath = system.paths?.scripts || './scripts'
+    const scriptsPath = path.join(AppPath.systemPath(system.id), scriptsBasePath)
+
+    const paths = await AppFS.getDirContent(scriptsPath)
+
+    const scriptFiles = paths.filter((file) => file.endsWith('.mjs') || file.endsWith('.js'))
+
+    return scriptFiles.map((file) => {
+      const fileName = path.basename(file)
+      let filePath = `/${path
+        .join(world.id, 'system', 'assets', scriptsBasePath, file.replace(scriptsPath, ''))
+        .replace(/\\/g, '/')}`
+
+      return {
+        name: fileName,
+        path: filePath,
+      }
+    })
+  }
+
   public static async setWorldAsCurrentDb(worldName: string) {
     const worldPath = AppPath.worldPath(worldName)
 

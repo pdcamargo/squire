@@ -18,7 +18,8 @@ export default class RuntimeController {
       description: 'Play description',
       world: manifests.world,
       system: manifests.system,
-      views: inertia.defer(() => WorldHelper.loadSystemViews(manifests.system)),
+      views: await WorldHelper.loadSystemViews(manifests.system),
+      scripts: await WorldHelper.loadSystemScripts(manifests.system, manifests.world),
     })
   }
 }

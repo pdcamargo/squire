@@ -12,6 +12,7 @@ export const systemSchema = vine.compile(
     paths: vine
       .object({
         views: vine.string().trim().optional().nullable(),
+        scripts: vine.string().trim().optional().nullable(),
       })
       .optional(),
   })
