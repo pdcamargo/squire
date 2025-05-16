@@ -1,16 +1,17 @@
-import { Deferred, Head } from '@inertiajs/react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { InferPageProps } from '@adonisjs/inertia/types'
+import { Deferred, Head } from '@inertiajs/react'
+import Handlebars from 'handlebars'
+
+import { Select, SelectContent, SelectTrigger } from '@/components/ui/select'
+
 import type RuntimeController from '../../../app/controllers/runtime_controller'
 
 type PageProps = InferPageProps<RuntimeController, 'play'>
 
-import Handlebars from 'handlebars'
-import { useCallback, useMemo, useState } from 'react'
-import { Select, SelectContent, SelectTrigger } from '~/lib/components/ui/select'
-
 export default function Play({ title, description, world, system, views, users }: PageProps) {
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [loggedIn] = useState(false)
 
   const registerPartials = useCallback(() => {
     if (!views) {
@@ -49,7 +50,7 @@ export default function Play({ title, description, world, system, views, users }
     }
     const rendered = template(data)
     return rendered
-  }, [views, world, system, description])
+  }, [views, registerPartials, world.name, system.name])
 
   return (
     <Deferred data={['users', 'views']} fallback={<div>Loading...</div>}>

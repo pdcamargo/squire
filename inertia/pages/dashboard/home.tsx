@@ -1,11 +1,10 @@
-import { Head } from '@inertiajs/react'
-
 import { InferPageProps } from '@adonisjs/inertia/types'
-import type DashboardController from '../../../app/controllers/dashboard_controller'
+import { Head } from '@inertiajs/react'
+import { Popover } from 'radix-ui'
+
+import type DashboardController from '#controllers/dashboard_controller'
 
 type PageProps = InferPageProps<DashboardController, 'index'>
-
-import { Popover } from 'radix-ui'
 
 export default function DashboardHome({ title, users }: PageProps) {
   return (

@@ -1,7 +1,7 @@
+import { InferPageProps } from '@adonisjs/inertia/types'
 import { Deferred, Head, useForm } from '@inertiajs/react'
 
-import { InferPageProps } from '@adonisjs/inertia/types'
-import type DashboardController from '../../../app/controllers/dashboard_controller'
+import type DashboardController from '#controllers/dashboard_controller'
 
 type PageProps = InferPageProps<DashboardController, 'worlds'>
 
