@@ -236,6 +236,27 @@ export default class WorldHelper {
     return mergedContents
   }
 
+  public static async setWorldAsCurrentDb(worldName: string) {
+    const worldPath = AppPath.worldPath(worldName)
+
+    if (!(await AppFS.checkPathExists(worldPath))) {
+      throw new Error(`World "${worldName}" does not exist.`)
+    }
+
+    const manifest = await AppFS.readJson<WorldType>(path.join(worldPath, 'world.json'))
+
+    if (!manifest) {
+      throw new Error(`World "${worldName}" does not exist.`)
+    }
+
+    db.manager.patch('world', {
+      client: 'better-sqlite3',
+      connection: {
+        filename: path.join(worldPath, 'data', 'world.db'),
+      },
+    })
+  }
+
   public static async runWorldMigrations(worldName: string) {
     const manifests = await this.readWorldAndSystemManifest(worldName)
 

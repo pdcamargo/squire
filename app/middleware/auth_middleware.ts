@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { Authenticators } from '@adonisjs/auth/types'
 import AppPath from '#helpers/app_path'
+import WorldHelper from '#helpers/world_creator'
 
 /**
  * Auth middleware is used authenticate HTTP requests and deny
@@ -34,6 +35,8 @@ export default class AuthMiddleware {
     // Check if the world is running
     // TODO: do the above
     const finalLoginRoute = this.redirectTo.replace(':world', currentWorld)
+
+    await WorldHelper.setWorldAsCurrentDb(currentWorld)
 
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: finalLoginRoute })
     return next()
