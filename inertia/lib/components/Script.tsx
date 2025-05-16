@@ -37,4 +37,4 @@ const Script: React.FC<ScriptProps> = ({ path, enabled = true, onLoaded, ...prop
   return null
 }
 
-export default Script
+export { Script }
