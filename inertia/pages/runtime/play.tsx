@@ -24,6 +24,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { Grid } from '@/pixi/grid'
 
 type PageProps = InferPageProps<RuntimeController, 'play'>
 
@@ -73,7 +74,11 @@ class SquireSDK {
     // Create and add a container to the stage
     const c = new PIXI.Container()
 
+    const grid = new Grid()
+
     app.stage.addChild(c)
+
+    app.stage.addChild(grid)
 
     // Load the bunny texture
     const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png')
@@ -81,6 +86,9 @@ class SquireSDK {
 
     c.x = app.screen.width / 2
     c.y = app.screen.height / 2
+
+    grid.x = c.x
+    grid.y = c.y
 
     c.addChild(bunny)
     bunny.anchor.set(0.5)
