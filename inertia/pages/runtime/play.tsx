@@ -2,9 +2,8 @@ import { useState } from 'react'
 
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { Head } from '@inertiajs/react'
-import Handlebars from 'handlebars'
 import { Globe } from 'lucide-react'
-import * as PIXI from 'pixi.js'
+import { observer } from 'mobx-react-lite'
 
 import type RuntimeController from '#controllers/runtime_controller'
 
@@ -24,101 +23,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { Grid } from '@/pixi/grid'
+import { SquireSDK } from '@/sdk/squire-sdk'
 
 type PageProps = InferPageProps<RuntimeController, 'play'>
 
-function loadScript(script: string) {
-  return new Promise((resolve, reject) => {
-    const scriptElement = document.createElement('script')
-    scriptElement.src = script
-    scriptElement.onload = () => resolve(true)
-    scriptElement.onerror = () => reject(new Error(`Failed to load script: ${script}`))
-    document.body.appendChild(scriptElement)
-  })
-}
-
-class SquireSDK {
-  constructor(private options: { scripts: string[]; views: Record<string, string> }) {
-    this.#init()
-  }
-
-  #init = async () => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    if (this.options.views && Object.keys(this.options.views).length > 0) {
-      Object.entries(this.options.views).forEach(([name, view]) => {
-        Handlebars.registerPartial(name, view)
-      })
-    }
-
-    const app = new PIXI.Application()
-
-    const container = document.querySelector<HTMLDivElement>('[data-id="canvas-container"]')!
-
-    await app.init({
-      background: '#1d1b22',
-      resizeTo: container,
-    })
-
-    const resizeObserver = new ResizeObserver(() => {
-      app.renderer.resize(container.clientWidth, container.clientHeight)
-    })
-
-    resizeObserver.observe(container)
-
-    container.appendChild(app.canvas)
-
-    // Create and add a container to the stage
-    const c = new PIXI.Container()
-
-    const grid = new Grid()
-
-    app.stage.addChild(c)
-
-    app.stage.addChild(grid)
-
-    // Load the bunny texture
-    const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png')
-    const bunny = new PIXI.Sprite(texture)
-
-    c.x = app.screen.width / 2
-    c.y = app.screen.height / 2
-
-    grid.x = c.x
-    grid.y = c.y
-
-    c.addChild(bunny)
-    bunny.anchor.set(0.5)
-
-    {
-      ;(window as any).Squire = this
-    }
-
-    // Initialize the SDK
-    await Promise.all(
-      this.options.scripts.map((script) => {
-        return loadScript(script)
-          .then(() => {
-            console.log(`Script ${script} loaded`)
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-      })
-    )
-
-    console.log('Squire SDK initialized')
-  }
-}
-
-export default function Play({ title, views, scripts }: PageProps) {
-  useState(() => {
+const Play = observer(({ title, views, scripts, scenes }: PageProps) => {
+  const [sdk] = useState(() => {
     return new SquireSDK({
       scripts: scripts.map((script) => script.path),
       views,
+      scenes,
     })
   })
 
@@ -156,15 +70,17 @@ export default function Play({ title, views, scripts }: PageProps) {
           <SidebarHeader></SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel>World</SidebarGroupLabel>
+              <SidebarGroupLabel>Scenes</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton>
-                      <Globe />
-                      <span>World Item</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  {scenes.map((scene) => (
+                    <SidebarMenuItem key={scene.id} onClick={() => sdk.setCurrentScene(scene)}>
+                      <SidebarMenuButton isActive={sdk.currentScene?.id === scene.id}>
+                        <Globe />
+                        <span>{scene.name}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -176,7 +92,9 @@ export default function Play({ title, views, scripts }: PageProps) {
             <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-              <h1 className="text-base font-medium">The Scene Name</h1>
+              {sdk.currentScene && (
+                <h1 className="text-base font-medium">{sdk.currentScene.name}</h1>
+              )}
             </div>
           </header>
 
@@ -192,4 +110,6 @@ export default function Play({ title, views, scripts }: PageProps) {
       </SidebarProvider>
     </>
   )
-}
+})
+
+export default Play

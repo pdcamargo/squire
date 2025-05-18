@@ -1,4 +1,4 @@
-import { Container, Graphics, ContainerOptions, Rectangle, Color } from 'pixi.js'
+import { Container, Graphics, ContainerOptions, Color } from 'pixi.js'
 
 export type GridOptions = ContainerOptions & {
   tileSize?: number
@@ -11,6 +11,8 @@ export type GridOptions = ContainerOptions & {
   subLineWidth?: number
   subLineAlpha?: number
 }
+
+export type GridUpdateOptions = Omit<GridOptions, keyof ContainerOptions>
 
 export class Grid extends Container {
   #tileSize: number
@@ -50,7 +52,23 @@ export class Grid extends Container {
     this.#drawGrid()
   }
 
+  public updateGrid(options: GridUpdateOptions) {
+    this.#tileSize = options.tileSize || this.#tileSize
+    this.#rows = options.rows || this.#rows
+    this.#columns = options.columns || this.#columns
+    this.#lineColor = options.lineColor ?? this.#lineColor
+    this.#lineWidth = options.lineWidth ?? this.#lineWidth
+    this.#lineAlpha = options.lineAlpha ?? this.#lineAlpha
+    this.#subLineColor = options.subLineColor ?? this.#subLineColor
+    this.#subLineWidth = options.subLineWidth ?? this.#subLineWidth
+    this.#subLineAlpha = options.subLineAlpha ?? this.#subLineAlpha
+
+    this.#drawGrid()
+  }
+
   #drawGrid() {
+    this.removeChildren()
+
     const graphics = new Graphics()
 
     const width = this.#columns * this.#tileSize
