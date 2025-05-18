@@ -29,4 +29,8 @@ export default class Utils {
 
     return this.compareVersions(v, minV) >= 0 && this.compareVersions(v, maxV) <= 0
   }
+
+  public static async delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 }

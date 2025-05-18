@@ -10,6 +10,7 @@ import AppFS from './app_fs.js'
 import Utils from './utils.js'
 import { WorldType } from '#validators/world'
 import { SystemType } from '#validators/system'
+import WorldScene from '#models/world_scene'
 
 const worldManifestTemplate = `
 {
@@ -237,7 +238,7 @@ export default class WorldHelper {
     })
   }
 
-  public static async runWorldMigrations(worldName: string) {
+  public static async runWorldMigrationsAndOptionalSeeders(worldName: string) {
     const manifests = await this.readWorldAndSystemManifest(worldName)
 
     if (!manifests) {
@@ -260,6 +261,34 @@ export default class WorldHelper {
     })
 
     await migrator.run()
+
+    if (migrator.error) {
+      console.error('Migration error:', migrator.error)
+    }
+
+    await Utils.delay(1000)
+
+    const scenes = await WorldScene.all()
+
+    if (scenes.length === 0) {
+      await WorldScene.createMany([
+        {
+          name: 'Default Scene',
+          description: 'This is the default scene.',
+          backgroundColor: '#000000',
+          backgroundImage: null,
+          gridSize: 50,
+          gridRows: 100,
+          gridColumns: 100,
+          gridLineColor: '#0f0f0f',
+          gridLineAlpha: 1,
+          gridLineWidth: 1,
+          gridSubLineColor: '#000',
+          gridSubLineAlpha: 0.1,
+          gridSubLineWidth: 1,
+        },
+      ])
+    }
 
     return migrator.migratedFiles
   }

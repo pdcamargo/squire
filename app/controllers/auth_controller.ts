@@ -23,7 +23,7 @@ export default class AuthController {
   public async loginPage({ inertia, params }: HttpContext) {
     const { world } = params as { world: string }
 
-    await WorldHelper.runWorldMigrations(world)
+    await WorldHelper.runWorldMigrationsAndOptionalSeeders(world)
 
     const users = await WorldUser.all()
 

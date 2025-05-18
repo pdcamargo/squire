@@ -2,6 +2,9 @@ import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class WorldToken extends BaseModel {
+  static table = 'world_tokens'
+  static connection = 'world'
+
   @column({ isPrimary: true })
   declare id: number
 

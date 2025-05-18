@@ -1,4 +1,6 @@
 import WorldHelper from '#helpers/world_creator'
+import WorldScene from '#models/world_scene'
+import { SceneType } from '#validators/scene'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RuntimeController {
@@ -11,7 +13,7 @@ export default class RuntimeController {
       return response.notFound('World not found or invalid system')
     }
 
-    await WorldHelper.runWorldMigrations(world)
+    await WorldHelper.runWorldMigrationsAndOptionalSeeders(world)
 
     return inertia.render('runtime/play', {
       title: 'Play',
@@ -20,6 +22,7 @@ export default class RuntimeController {
       system: manifests.system,
       views: await WorldHelper.loadSystemViews(manifests.system),
       scripts: await WorldHelper.loadSystemScripts(manifests.system, manifests.world),
+      scenes: (await WorldScene.query().orderBy('created_at', 'desc')) as SceneType[],
     })
   }
 }
