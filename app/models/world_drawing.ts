@@ -1,6 +1,7 @@
-import { DateTime } from 'luxon'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
+
 import WorldScene from '#models/world_scene'
 
 export default class WorldDrawing extends BaseModel {

@@ -1,14 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-import User from '#models/user'
-import AppPath from '#helpers/app_path'
-
-// import fs from 'node:fs/promises'
-import { createWorldSchema } from '#validators/world'
-import WorldHelper from '#helpers/world_creator'
 import AppFS from '#helpers/app_fs'
-
-// import db from '@adonisjs/lucid/services/db'
+import AppPath from '#helpers/app_path'
+import SystemHelper from '#helpers/system_helper'
+import WorldHelper from '#helpers/world_helper'
+import User from '#models/user'
+import { createWorldSchema } from '#validators/world'
 
 export default class DashboardController {
   public async create({ request }: HttpContext) {
@@ -56,6 +53,7 @@ export default class DashboardController {
           assets: await AppFS.checkPathExists(AppPath.assets),
         },
         worlds: await WorldHelper.listWorlds(),
+        systems: await SystemHelper.listSystems(),
       },
     })
   }

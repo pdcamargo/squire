@@ -1,9 +1,11 @@
+import path from 'node:path'
+
+import type { HttpContext } from '@adonisjs/core/http'
+import mime from 'mime-types'
+
 import AppFS from '#helpers/app_fs'
 import AppPath from '#helpers/app_path'
-import type { HttpContext } from '@adonisjs/core/http'
-import path from 'node:path'
-import mime from 'mime-types'
-import WorldHelper from '#helpers/world_creator'
+import WorldHelper from '#helpers/world_helper'
 
 export default class AssetsController {
   public async show({ request, response, params }: HttpContext) {

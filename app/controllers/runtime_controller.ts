@@ -1,8 +1,9 @@
-import WorldHelper from '#helpers/world_creator'
+import type { HttpContext } from '@adonisjs/core/http'
+
+import WorldHelper from '#helpers/world_helper'
 import WorldScene from '#models/world_scene'
 import { DrawingType } from '#validators/drawing'
 import { SceneType } from '#validators/scene'
-import type { HttpContext } from '@adonisjs/core/http'
 
 export default class RuntimeController {
   public async play({ inertia, params, response }: HttpContext) {

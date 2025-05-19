@@ -8,6 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
+
 import { middleware } from './kernel.js'
 router.get('/', '#controllers/dashboard_controller.home')
 

@@ -1,7 +1,8 @@
-import AppPath from '#helpers/app_path'
-import WorldHelper from '#helpers/world_creator'
-import WorldUser from '#models/world_user'
 import type { HttpContext } from '@adonisjs/core/http'
+
+import AppPath from '#helpers/app_path'
+import WorldHelper from '#helpers/world_helper'
+import WorldUser from '#models/world_user'
 
 export default class AuthController {
   public async login({ request, auth, response, params }: HttpContext) {

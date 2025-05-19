@@ -1,8 +1,9 @@
+import type { Authenticators } from '@adonisjs/auth/types'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import type { Authenticators } from '@adonisjs/auth/types'
+
 import AppPath from '#helpers/app_path'
-import WorldHelper from '#helpers/world_creator'
+import WorldHelper from '#helpers/world_helper'
 
 /**
  * Auth middleware is used authenticate HTTP requests and deny
