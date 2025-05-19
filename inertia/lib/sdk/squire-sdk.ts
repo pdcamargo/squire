@@ -1,21 +1,24 @@
 import Handlebars from 'handlebars'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, toJS } from 'mobx'
 import * as PIXI from 'pixi.js'
 
+import { drawingSchema, DrawingType } from '#validators/drawing'
 import { SceneType } from '#validators/scene'
 
 import { loadScript } from '@/lib/utils'
+import { Camera } from '@/pixi/camera'
+import { Circle } from '@/pixi/circle'
 import { Grid, GridUpdateOptions } from '@/pixi/grid'
+import { Rect } from '@/pixi/rect'
+import { Sprite } from '@/pixi/sprite'
 
 export class SDKScene {
-  public readonly data: SceneType
-
   constructor(
     private readonly sdk: SquireSDK,
-    data: SceneType
+    private readonly data: SceneType & {
+      drawings: Array<DrawingType>
+    }
   ) {
-    this.data = data
-
     makeAutoObservable(this, undefined, { autoBind: true })
 
     this.render()
@@ -30,13 +33,40 @@ export class SDKScene {
   }
 
   public async render() {
-    const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png')
-    const bunny = new PIXI.Sprite(texture)
-    bunny.anchor.set(0.5)
-    bunny.x = this.sdk.canvasController.viewport.width / 2
-    bunny.y = this.sdk.canvasController.viewport.height / 2
+    // const texture = await PIXI.Assets.load('https://pixijs.com/assets/bunny.png')
+    // const bunny = new PIXI.Sprite(texture)
+    // bunny.anchor.set(0.5)
+    // bunny.x = this.sdk.canvasController.viewport.width / 2
+    // bunny.y = this.sdk.canvasController.viewport.height / 2
 
-    this.sdk.canvasController.stage.addChild(bunny)
+    // this.sdk.canvasController.stage.addChild(bunny)
+    for (const drawing of this.data.drawings) {
+      const options = await drawingSchema.validate(toJS(drawing))
+
+      if (drawing.type === 'rectangle') {
+        const rect = new Rect(options.options as any)
+
+        this.sdk.canvasController.stage.addChild(rect)
+
+        continue
+      }
+
+      if (drawing.type === 'circle') {
+        const circle = new Circle(options.options as any)
+
+        this.sdk.canvasController.stage.addChild(circle)
+
+        continue
+      }
+
+      if (drawing.type === 'sprite') {
+        const sprite = new Sprite(options.options as any)
+
+        this.sdk.canvasController.stage.addChild(sprite)
+
+        continue
+      }
+    }
   }
 }
 
@@ -81,28 +111,52 @@ class SDKCanvasController {
 
     container.appendChild(this.application.canvas)
 
+    const camera = new Camera({
+      // application: this.application,
+      viewportWidth: container.clientWidth,
+      viewportHeight: container.clientHeight,
+      worldWidth: 1920,
+      worldHeight: 1080,
+      clamp: false,
+      // events: this.application.renderer.events,
+      // screenWidth: container.clientWidth,
+      // screenHeight: container.clientHeight,
+    })
+
+    camera.enableWheel(this.application)
+
+    const cameraRootContainer = new PIXI.Container()
+
+    camera.addChild(cameraRootContainer)
+
     const gridContainer = new PIXI.Container({
       zIndex: 0,
     })
 
-    gridContainer.x = this.application.renderer.width / 2
-    gridContainer.y = this.application.renderer.height / 2
-
-    const grid = new Grid()
+    const grid = new Grid({
+      width: 1920,
+      height: 1080,
+    })
 
     this.grid = grid
 
     gridContainer.addChild(grid)
 
-    this.application.stage.addChild(gridContainer)
+    cameraRootContainer.addChild(gridContainer)
+
+    this.application.stage.addChild(camera)
 
     const appContainer = new PIXI.Container({
       zIndex: 1,
     })
 
-    this.application.stage.addChild(appContainer)
+    cameraRootContainer.addChild(appContainer)
 
     this.stage = appContainer
+
+    this.application.ticker.add(({ deltaMS }) => {
+      camera.update(deltaMS)
+    })
   }
 
   public updateBackground(color: string) {
@@ -137,16 +191,10 @@ export class SquireSDK {
     this.#init()
   }
 
-  public setCurrentScene(scene: SceneType) {
+  public setCurrentScene(scene: SceneType & { drawings: Array<DrawingType> }) {
     this.canvasController.stage.removeChildren()
 
-    if (scene.backgroundColor) {
-      this.canvasController.updateBackground(scene.backgroundColor)
-    }
-
     this.canvasController.updateGrid({
-      columns: scene.gridColumns,
-      rows: scene.gridRows,
       tileSize: scene.gridSize,
       lineColor: scene.gridLineColor
         ? new PIXI.Color(scene.gridLineColor).toBgrNumber()
@@ -158,6 +206,8 @@ export class SquireSDK {
         : undefined,
       subLineWidth: scene.gridSubLineWidth,
       subLineAlpha: scene.gridSubLineAlpha,
+      worldSize: scene.worldSize,
+      backgroundColor: scene.backgroundColor || undefined,
     })
 
     this.currentScene = new SDKScene(this, scene)

@@ -278,14 +278,16 @@ export default class WorldHelper {
           backgroundColor: '#000000',
           backgroundImage: null,
           gridSize: 50,
-          gridRows: 100,
-          gridColumns: 100,
           gridLineColor: '#0f0f0f',
           gridLineAlpha: 1,
           gridLineWidth: 1,
           gridSubLineColor: '#000',
           gridSubLineAlpha: 0.1,
           gridSubLineWidth: 1,
+          worldSize: {
+            width: 1000,
+            height: 1000,
+          },
         },
       ])
     }

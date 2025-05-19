@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import WorldDrawing from '#models/world_drawing'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class WorldScene extends BaseModel {
   static table = 'scenes'
@@ -24,12 +26,6 @@ export default class WorldScene extends BaseModel {
   declare gridSize: number
 
   @column()
-  declare gridRows: number
-
-  @column()
-  declare gridColumns: number
-
-  @column()
   declare gridLineColor: string | null
 
   @column()
@@ -47,9 +43,27 @@ export default class WorldScene extends BaseModel {
   @column()
   declare gridSubLineWidth: number
 
+  @column({
+    prepare: (value: any) => {
+      return JSON.stringify(value)
+    },
+    serialize: (value: any) => {
+      return JSON.parse(value)
+    },
+  })
+  declare worldSize: {
+    width: number
+    height: number
+  }
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @hasMany(() => WorldDrawing, {
+    foreignKey: 'sceneId',
+  })
+  declare drawings: HasMany<typeof WorldDrawing>
 }
