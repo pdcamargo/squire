@@ -25,7 +25,7 @@ export default class RuntimeController {
       scripts: await WorldHelper.loadSystemScripts(manifests.system, manifests.world),
       scenes: (await WorldScene.query()
         .orderBy('created_at', 'desc')
-        .preload('drawings')) as (SceneType & {
+        .preload('drawings')) as unknown as (SceneType & {
         drawings: Array<DrawingType>
       })[],
     })

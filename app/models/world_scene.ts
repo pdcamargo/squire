@@ -26,12 +26,6 @@ export default class WorldScene extends BaseModel {
   declare gridSize: number
 
   @column()
-  declare gridRows: number
-
-  @column()
-  declare gridColumns: number
-
-  @column()
   declare gridLineColor: string | null
 
   @column()
