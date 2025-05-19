@@ -1,9 +1,9 @@
-import path from 'node:path'
 import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
 
 import AppFS from '#helpers/app_fs'
-import Utils from './utils.js'
+import Utils from '#helpers/utils'
 
 const homedir = os.homedir()
 const tmpdir = os.tmpdir()
@@ -170,6 +170,7 @@ export default class AppPath {
       return false
     }
 
+    // TODO: handle system compatibility
     const FAKE_CURRENT_VERSION = '1.3.0'
 
     return Utils.isVersionInRange(

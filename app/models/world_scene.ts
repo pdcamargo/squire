@@ -1,7 +1,8 @@
-import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
-import WorldDrawing from '#models/world_drawing'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
+
+import WorldDrawing from '#models/world_drawing'
 
 export default class WorldScene extends BaseModel {
   static table = 'scenes'

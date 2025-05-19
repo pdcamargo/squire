@@ -1,16 +1,17 @@
-import string from '@adonisjs/core/helpers/string'
-import app from '@adonisjs/core/services/app'
-import db from '@adonisjs/lucid/services/db'
-import { MigrationRunner } from '@adonisjs/lucid/migration'
-
 import path from 'node:path'
 
+import string from '@adonisjs/core/helpers/string'
+import app from '@adonisjs/core/services/app'
+import { MigrationRunner } from '@adonisjs/lucid/migration'
+import db from '@adonisjs/lucid/services/db'
+
+import AppFS from '#helpers/app_fs'
 import AppPath from '#helpers/app_path'
-import AppFS from './app_fs.js'
-import Utils from './utils.js'
-import { WorldType } from '#validators/world'
-import { SystemType } from '#validators/system'
+import SystemHelper from '#helpers/system_helper'
+import Utils from '#helpers/utils'
 import WorldScene from '#models/world_scene'
+import { SystemType } from '#validators/system'
+import { WorldType } from '#validators/world'
 
 const worldManifestTemplate = `
 {
@@ -125,22 +126,12 @@ export default class WorldHelper {
       return null
     }
 
-    const systemPath = AppPath.systemPath(manifest.system)
-    const systemManifest = await AppFS.readJson<SystemType>(path.join(systemPath, 'system.json'))
+    const systemManifest = await SystemHelper.readSystemManifest(manifest.system)
+
     if (!systemManifest) {
       return null
     }
-    const FAKE_CURRENT_VERSION = '1.0.0'
 
-    if (
-      !Utils.isVersionInRange(
-        FAKE_CURRENT_VERSION,
-        systemManifest.compatibility.min,
-        systemManifest.compatibility.max
-      )
-    ) {
-      return null
-    }
     return {
       world: manifest,
       system: systemManifest,
