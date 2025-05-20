@@ -77,6 +77,34 @@ export default class AssetsController {
     return this.#createStream(response, filePath, finalMaxAge)
   }
 
+  public async showSystemAsset({ request, response, params }: HttpContext) {
+    // we don't care about the world here, only the system
+    const { maxAge = '60' } = request.qs()
+    const finalMaxAge = (() => {
+      if (Number.isNaN(Number(maxAge))) {
+        return 60
+      }
+      if (Number(maxAge) < 0) {
+        return 0
+      }
+      if (Number(maxAge) > 31536000) {
+        return 31536000
+      }
+      return Number(maxAge)
+    })()
+
+    const system = params.system
+    const systemDir = AppPath.systemPath(system)
+    const segments = params['*'] as string[]
+    const filePath = path.join(systemDir, ...segments)
+
+    if (!filePath.startsWith(systemDir)) {
+      return response.forbidden('Access denied')
+    }
+
+    return this.#createStream(response, filePath, finalMaxAge)
+  }
+
   #createStream = (response: HttpContext['response'], filePath: string, maxAge: number) => {
     const readStream = AppFS.createReadStream(filePath)
 

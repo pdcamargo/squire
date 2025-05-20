@@ -4,7 +4,6 @@ import AppFS from '#helpers/app_fs'
 import AppPath from '#helpers/app_path'
 import SystemHelper from '#helpers/system_helper'
 import WorldHelper from '#helpers/world_helper'
-import User from '#models/user'
 import { createWorldSchema } from '#validators/world'
 
 export default class DashboardController {
@@ -59,30 +58,13 @@ export default class DashboardController {
   }
 
   public async index({ inertia }: HttpContext) {
-    // const pg = db.manager.patch('world', {
-    //   connection: {
-    //     filename: "",
-    //   }
-    // })
-
-    // const files = await fs.readdir(AppPath.data, { recursive: false, withFileTypes: true })
-
-    let users = await User.all()
-
-    if (users.length === 0) {
-      await User.create({
-        email: 'admin@fantasycraft.io',
-        fullName: 'Admin',
-        password: '1234',
-      })
-
-      users = await User.all()
-    }
-
     return inertia.render('dashboard/home', {
       title: 'Dashboard',
       description: 'Dashboard description',
-      users,
+      worlds: await WorldHelper.listWorlds(),
+      systems: await SystemHelper.listSystems(),
+      // TODO: modules loader
+      modules: [],
     })
   }
 }

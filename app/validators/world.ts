@@ -17,6 +17,8 @@ export const worldSchema = vine.compile(
     system: vine.string().trim(),
     lastPlayed: vine.string().trim(),
     lastUpdated: vine.string().trim(),
+    createdAt: vine.string().trim(),
+    tags: vine.array(vine.string().trim()).optional(),
   })
 )
 export type WorldType = Infer<typeof worldSchema>
