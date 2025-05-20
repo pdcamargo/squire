@@ -107,6 +107,10 @@ export default class AppFS {
     await fs.writeFile(filePath, data, 'utf-8')
   }
 
+  public static async writeJson<T = any>(filePath: string, data: T) {
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
+  }
+
   public static async isDirectory(filePath: string) {
     try {
       const stat = await fs.stat(filePath)

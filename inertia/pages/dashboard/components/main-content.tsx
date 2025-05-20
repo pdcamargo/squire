@@ -7,6 +7,7 @@ import { Globe, Box, Puzzle } from 'lucide-react'
 
 import type DashboardController from '#controllers/dashboard_controller'
 
+import { NewSystemDialogTrigger } from '@/components/dialogs/new-system-dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { ContentGrid } from './content-grid'
@@ -105,6 +106,8 @@ export function MainContent({ worlds, systems }: MainContentProps) {
           <ContentGrid items={worldsData} />
         </TabsContent>
         <TabsContent value="systems" className="p-4 overflow-auto">
+          <NewSystemDialogTrigger />
+
           <ContentGrid items={systemsData} />
         </TabsContent>
         <TabsContent value="modules" className="p-4 overflow-auto">

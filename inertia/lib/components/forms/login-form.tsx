@@ -4,7 +4,6 @@ import { useFormContext } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectTrigger, SelectItem } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 

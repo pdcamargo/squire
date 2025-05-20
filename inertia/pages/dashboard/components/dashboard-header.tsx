@@ -13,12 +13,12 @@ import {
 
 export function DashboardHeader() {
   return (
-    <header className="border-b bg-card">
+    <header className="shadow-lg border-b border-b-white/5 bg-background">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Dice5 className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">VTT Dashboard</span>
+            <span className="text-xl font-bold">Squire</span>
           </Link>
         </div>
         <div className="flex items-center gap-2">

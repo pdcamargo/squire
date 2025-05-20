@@ -61,8 +61,8 @@ export default class DashboardController {
     return inertia.render('dashboard/home', {
       title: 'Dashboard',
       description: 'Dashboard description',
-      worlds: await WorldHelper.listWorlds(),
-      systems: await SystemHelper.listSystems(),
+      worlds: () => WorldHelper.listWorlds(),
+      systems: () => SystemHelper.listSystems(),
       // TODO: modules loader
       modules: [],
     })

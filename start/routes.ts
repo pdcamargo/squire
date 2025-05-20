@@ -22,6 +22,7 @@ router
   .use(middleware.auth())
 
 router.get('/:system/*', '#controllers/assets_controller.showSystemAsset')
+router.post('/systems', '#controllers/systems_controller.create')
 
 // SSR
 router.get('/dashboard', '#controllers/dashboard_controller.index')

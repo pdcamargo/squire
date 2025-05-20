@@ -1,6 +1,5 @@
 import { InferPageProps } from '@adonisjs/inertia/types'
 import { vineResolver } from '@hookform/resolvers/vine'
-import { router } from '@inertiajs/react'
 import vine from '@vinejs/vine'
 import { Infer } from '@vinejs/vine/types'
 import { AlertCircle, Check, GalleryVerticalEnd } from 'lucide-react'
