@@ -18,4 +18,4 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - SESSION_DRIVER=${SESSION_DRIVER:-cookie}
     working_dir: /app/build
-    command: npm run start
+    command: pnpm start
