@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite'
 
 import type RuntimeController from '#controllers/runtime_controller'
 
+import { Translate } from '@/components/translate'
 import { Separator } from '@/components/ui/separator'
 import {
   Sidebar,
@@ -95,6 +96,8 @@ const Play = observer(({ title, views, scripts, scenes }: PageProps) => {
               {sdk.currentScene && (
                 <h1 className="text-base font-medium">{sdk.currentScene.name}</h1>
               )}
+
+              <Translate t="play.hello" data={{ name: 'Patrick' }} />
             </div>
           </header>
 

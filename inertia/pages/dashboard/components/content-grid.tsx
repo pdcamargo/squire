@@ -14,9 +14,10 @@ interface ContentItem {
 
 interface ContentGridProps {
   items: ContentItem[]
+  onClick?: (item: ContentItem) => void
 }
 
-export function ContentGrid({ items }: ContentGridProps) {
+export function ContentGrid({ items, onClick }: ContentGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.length === 0 && (
@@ -26,7 +27,11 @@ export function ContentGrid({ items }: ContentGridProps) {
       )}
 
       {items.map((item) => (
-        <Card key={item.id} className="overflow-hidden flex flex-col h-full">
+        <Card
+          key={item.id}
+          className="overflow-hidden flex flex-col h-full"
+          onClick={() => onClick?.(item)}
+        >
           <CardHeader className="p-4 pb-2">
             <h3 className="text-lg font-bold">{item.name}</h3>
           </CardHeader>

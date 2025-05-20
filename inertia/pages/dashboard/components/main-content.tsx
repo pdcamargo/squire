@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { InferPageProps } from '@adonisjs/inertia/types'
+import { router } from '@inertiajs/react'
 import { Globe, Box, Puzzle } from 'lucide-react'
 
 import type DashboardController from '#controllers/dashboard_controller'
@@ -103,7 +104,14 @@ export function MainContent({ worlds, systems }: MainContentProps) {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="worlds" className="p-4 overflow-auto">
-          <ContentGrid items={worldsData} />
+          <ContentGrid
+            items={worldsData}
+            onClick={({ id }) => {
+              router.visit(`/${id}/play`, {
+                replace: true,
+              })
+            }}
+          />
         </TabsContent>
         <TabsContent value="systems" className="p-4 overflow-auto">
           <NewSystemDialogTrigger />

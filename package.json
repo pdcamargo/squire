@@ -30,7 +30,8 @@
     "#database/*": "./database/*.js",
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#resources/*": "./resources/**/*.json"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
@@ -66,6 +67,7 @@
     "@adonisjs/auth": "^9.3.1",
     "@adonisjs/core": "^6.17.2",
     "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/i18n": "^2.2.0",
     "@adonisjs/inertia": "^3.1.0",
     "@adonisjs/lucid": "^21.6.0",
     "@adonisjs/session": "^7.5.1",
@@ -118,6 +120,7 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^0.509.0",
     "luxon": "^3.6.1",
+    "message-format": "^6.2.4",
     "mime-types": "^3.0.1",
     "mobx": "^6.13.7",
     "mobx-react-lite": "^4.1.0",
