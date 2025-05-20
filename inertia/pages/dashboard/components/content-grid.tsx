@@ -39,7 +39,7 @@ export function ContentGrid({ items }: ContentGridProps) {
                   className="object-cover w-full h-full"
                 />
               ) : (
-                <div className="flex items-center justify-center h-full bg-muted">
+                <div className="flex items-center justify-center h-full bg-white/10">
                   <Tag className="h-16 w-16 text-muted-foreground opacity-20" />
                 </div>
               )}
@@ -53,7 +53,7 @@ export function ContentGrid({ items }: ContentGridProps) {
             </div>
             <div className="flex flex-wrap gap-1 justify-end">
               {item.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
+                <Badge key={tag} variant="default" className="text-xs">
                   {tag}
                 </Badge>
               ))}

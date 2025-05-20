@@ -72,6 +72,7 @@
     "@adonisjs/shield": "^8.1.2",
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^4.0.0",
+    "@ebay/nice-modal-react": "^1.2.13",
     "@hookform/resolvers": "^5.0.1",
     "@inertiajs/react": "^2.0.9",
     "@radix-ui/react-accordion": "^1.2.10",

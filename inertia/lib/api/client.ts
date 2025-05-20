@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 function replaceParam(url: string, params: Record<string, string>): string {
   return url.replace(/\[([^\]]+)\]/g, (_, key) => params[key] || `[${key}]`)
@@ -13,6 +13,10 @@ type MethodConfig = {
   params?: Record<string, string>
   headers?: Record<string, string>
   client?: 'fetcher' | 'router'
+  revalidate?: {
+    only?: string[]
+    except?: string[]
+  }
 }
 
 export class FetcherResponse<T = any> {
@@ -43,6 +47,19 @@ export class FetcherError extends Error {
   }
 }
 
+export class FetcherValidationError extends FetcherError {
+  constructor(
+    message: string,
+    response: FetcherResponse,
+    public readonly errors: Array<{ message: string; rule: string; field: string }>
+  ) {
+    super(message, response)
+    this.name = 'FetcherValidationError'
+
+    Object.setPrototypeOf(this, FetcherValidationError.prototype)
+  }
+}
+
 export function isFetcherError(error: unknown): error is FetcherError {
   return error instanceof FetcherError
 }
@@ -54,6 +71,13 @@ export function isDefaultError(error: unknown): error is Error {
 }
 export function isAxiosError(error: unknown) {
   return axios.isAxiosError(error)
+}
+export function isValidationError(error: unknown): error is FetcherValidationError {
+  return error instanceof FetcherValidationError
+}
+
+export function isApiValidationError(error: AxiosError<any>) {
+  return error.response?.data?.errors !== undefined && error.response?.status === 422
 }
 
 export class Fetcher {
@@ -103,36 +127,71 @@ export class Fetcher {
     data?: Data,
     config?: MethodConfig
   ): Promise<FetcherResponse<Response>> => {
-    const { params, headers, client = 'fetcher' } = config || {}
+    try {
+      const { params, headers, client = 'fetcher' } = config || {}
 
-    const targetUrl = params ? replaceParam(url, params) : url
+      const targetUrl = params ? replaceParam(url, params) : url
 
-    const response = await fetcherClient<Response>({
-      method,
-      url: targetUrl,
-      data,
-      headers,
-    })
+      const response = await fetcherClient<Response>({
+        method,
+        url: targetUrl,
+        data,
+        headers,
+      })
 
-    if (client === 'router') {
-      const baseUrl = window.location.origin
-      const fullUrl = response.request.responseURL.replace(baseUrl, '')
+      if (client === 'router') {
+        const baseUrl = window.location.origin
+        const fullUrl = response.request.responseURL.replace(baseUrl, '')
 
-      router.visit(fullUrl)
+        router.visit(fullUrl)
+      }
+
+      const res = new FetcherResponse(
+        response.data,
+        response.status,
+        response.statusText,
+        response.request
+      )
+
+      if ([500, 401, 403].includes(response.status)) {
+        throw new FetcherError(`Request failed with status code ${response.status}`, res)
+      }
+
+      if (config?.revalidate) {
+        const { only } = config.revalidate
+
+        router.reload({
+          only,
+        })
+      }
+
+      return res
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const res = new FetcherResponse(
+          error.response?.data,
+          error.response?.status || 0,
+          error.response?.statusText || '',
+          error.response?.request
+        )
+
+        if (isApiValidationError(error)) {
+          throw new FetcherValidationError(
+            `Request failed with status code ${error.response?.status}`,
+            res,
+            error?.response?.data.errors || []
+          )
+        }
+
+        throw new FetcherError(`Request failed with status code ${error.response?.status}`, res)
+      }
+
+      if (isDefaultError(error)) {
+        throw new FetcherError(error.message, new FetcherResponse(null, 0, '', { responseURL: '' }))
+      }
+
+      throw error
     }
-
-    const res = new FetcherResponse(
-      response.data,
-      response.status,
-      response.statusText,
-      response.request
-    )
-
-    if ([500, 401, 403].includes(response.status)) {
-      throw new FetcherError(`Request failed with status code ${response.status}`, res)
-    }
-
-    return res
   }
 }
 
