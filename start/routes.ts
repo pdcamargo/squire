@@ -21,6 +21,8 @@ router
   .get('/:world/system/assets/*', '#controllers/assets_controller.showSystem')
   .use(middleware.auth())
 
+router.get('/:system/*', '#controllers/assets_controller.showSystemAsset')
+
 // SSR
 router.get('/dashboard', '#controllers/dashboard_controller.index')
 router.get('/dashboard/worlds', '#controllers/dashboard_controller.worlds')
