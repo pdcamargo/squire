@@ -10,6 +10,7 @@ import {
   newSystemFormSchema,
   NewSystemFormValues,
 } from '@/components/forms/new-system-form'
+import { Translate } from '@/components/translate'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -45,7 +46,7 @@ export const NewSystemDialog = registerDialog(() => {
   async function onSubmit(values: NewSystemFormValues) {
     createSystem(values, {
       onSuccess: () => {
-        toast('System created successfully!', {
+        toast(<Translate t="system.dialog.new.success" />, {
           id: 'system-created',
           duration: 5000,
           icon: <Check className="size-4" />,
@@ -61,17 +62,21 @@ export const NewSystemDialog = registerDialog(() => {
     <Dialog open={disclosure.isVisible} onOpenChange={disclosure.hide}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New System</DialogTitle>
+          <DialogTitle>
+            <Translate t="system.dialog.new.title" />
+          </DialogTitle>
 
           <DialogDescription>
-            Add a new system to your Squire VTT. Fill in the details below.
+            <Translate t="system.dialog.new.description" />
           </DialogDescription>
         </DialogHeader>
 
         {isCreateSystemError && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error!</AlertTitle>
+            <AlertTitle>
+              <Translate t="system.dialog.new.error.title" />
+            </AlertTitle>
             <AlertDescription>
               {isValidationError(error) && (
                 <div className="grid gap-2">
@@ -97,17 +102,11 @@ export const NewSystemDialog = registerDialog(() => {
               disclosure.hide()
             }}
           >
-            Cancel
+            <Translate t="system.dialog.new.actions.cancel" />
           </Button>
 
-          <Button
-            form="CREATE_NEW_SYSTEM_FORM"
-            type="submit"
-            // onClick={() => {
-            //   disclosure.hide()
-            // }}
-          >
-            Create System
+          <Button form="CREATE_NEW_SYSTEM_FORM" type="submit">
+            <Translate t="system.dialog.new.actions.submit" />
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -125,7 +124,7 @@ export const NewSystemDialogTrigger = () => {
       }}
     >
       <Plus />
-      Create New System
+      <Translate t="system.dialog.new.trigger" />
     </Button>
   )
 }

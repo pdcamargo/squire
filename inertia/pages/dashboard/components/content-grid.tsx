@@ -1,7 +1,9 @@
 import { Calendar, Tag } from 'lucide-react'
 
+import { Translate } from '@/components/translate'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { useTranslation } from '@/hooks/use-translation'
 
 interface ContentItem {
   id: string
@@ -18,11 +20,15 @@ interface ContentGridProps {
 }
 
 export function ContentGrid({ items, onClick }: ContentGridProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.length === 0 && (
         <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center p-4">
-          <p className="text-sm text-muted-foreground">No items found.</p>
+          <p className="text-sm text-muted-foreground">
+            <Translate t="dashboard.content.empty" />
+          </p>
         </div>
       )}
 
@@ -40,7 +46,7 @@ export function ContentGrid({ items, onClick }: ContentGridProps) {
               {item.image ? (
                 <img
                   src={item.image || '/placeholder.svg'}
-                  alt={item.name}
+                  alt={t('dashboard.content.image.alt', { name: item.name })}
                   className="object-cover w-full h-full"
                 />
               ) : (

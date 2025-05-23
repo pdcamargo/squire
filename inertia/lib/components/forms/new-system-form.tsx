@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { createSystemSchema } from '#validators/system'
 
+import { Translate } from '@/components/translate'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 // import { Label } from '@/components/ui/label'
@@ -37,7 +38,9 @@ export function NewSystemForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>
+                <Translate t="system.form.name.label" />
+              </FormLabel>
               <FormControl>
                 <Input type="text" {...field} />
               </FormControl>
@@ -50,7 +53,9 @@ export function NewSystemForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>
+                <Translate t="system.form.description.label" />
+              </FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -59,7 +64,9 @@ export function NewSystemForm({
           )}
         />
         {/* <div className="grid gap-3">
-          <Label>Compatibility</Label>
+          <Label>
+            <Translate t="system.form.compatibility.label" />
+          </Label>
 
           <div className="grid grid-cols-2 gap-6">
             <FormField
@@ -67,7 +74,9 @@ export function NewSystemForm({
               name="compatibility.max"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max</FormLabel>
+                  <FormLabel>
+                    <Translate t="system.form.compatibility.max.label" />
+                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -80,7 +89,9 @@ export function NewSystemForm({
               name="compatibility.min"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Min</FormLabel>
+                  <FormLabel>
+                    <Translate t="system.form.compatibility.min.label" />
+                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -95,10 +106,12 @@ export function NewSystemForm({
             name="tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Invite people</FormLabel>
+                <FormLabel>
+                  <Translate t="system.form.tags.label" />
+                </FormLabel>
                 <MultiSelector onValuesChange={field.onChange} values={field.value || []}>
                   <MultiSelectorTrigger>
-                    <MultiSelectorInput placeholder="Tags" />
+                    <MultiSelectorInput placeholder={<Translate t="system.form.tags.placeholder" />} />
                   </MultiSelectorTrigger>
                   <MultiSelectorContent>
                     <MultiSelectorList>

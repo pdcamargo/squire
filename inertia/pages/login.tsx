@@ -10,8 +10,10 @@ import type AuthController from '#controllers/auth_controller'
 
 import { useLoginMutation } from '@/api/useLoginMutation'
 import { LoginForm } from '@/components/forms/login-form'
+import { Translate } from '@/components/translate'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Form } from '@/components/ui/form'
+import { useTranslation } from '@/hooks/use-translation'
 
 type PageProps = InferPageProps<AuthController, 'loginPage'>
 
@@ -23,6 +25,7 @@ const formSchema = vine.compile(
 )
 
 export default function LoginPage({ users, world }: PageProps) {
+  const { t } = useTranslation()
   const { mutate: login, isError: isLoginError } = useLoginMutation(world)
 
   const form = useForm<Infer<typeof formSchema>>({
@@ -36,9 +39,9 @@ export default function LoginPage({ users, world }: PageProps) {
   async function onSubmit(values: Infer<typeof formSchema>) {
     login(values, {
       onSuccess: () => {
-        toast('Login successful!', {
+        toast(t('login.success.title'), {
           id: 'login-success',
-          description: 'Redirecting to dashboard...',
+          description: t('login.success.description'),
           duration: 2000,
           icon: <Check className="size-4" />,
           dismissible: true,
@@ -55,7 +58,7 @@ export default function LoginPage({ users, world }: PageProps) {
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Acme Inc.
+            <Translate t="login.brand.name" />
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -63,8 +66,12 @@ export default function LoginPage({ users, world }: PageProps) {
             {isLoginError && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error!</AlertTitle>
-                <AlertDescription>Invalid username or password. Please try again.</AlertDescription>
+                <AlertTitle>
+                  <Translate t="login.error.title" />
+                </AlertTitle>
+                <AlertDescription>
+                  <Translate t="login.error.description" />
+                </AlertDescription>
               </Alert>
             )}
 

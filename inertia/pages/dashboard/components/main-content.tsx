@@ -9,6 +9,7 @@ import { Globe, Box, Puzzle } from 'lucide-react'
 import type DashboardController from '#controllers/dashboard_controller'
 
 import { NewSystemDialogTrigger } from '@/components/dialogs/new-system-dialog'
+import { Translate } from '@/components/translate'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { ContentGrid } from './content-grid'
@@ -92,15 +93,21 @@ export function MainContent({ worlds, systems }: MainContentProps) {
         <TabsList className="w-full grid grid-cols-3 rounded-none h-[unset]">
           <TabsTrigger value="worlds" className="flex items-center gap-2 py-4">
             <Globe className="h-5 w-5" />
-            <span>Worlds</span>
+            <span>
+              <Translate t="general.worlds" />
+            </span>
           </TabsTrigger>
           <TabsTrigger value="systems" className="flex items-center gap-2 py-4">
             <Box className="h-5 w-5" />
-            <span>Systems</span>
+            <span>
+              <Translate t="general.systems" />
+            </span>
           </TabsTrigger>
           <TabsTrigger value="modules" className="flex items-center gap-2 py-4">
             <Puzzle className="h-5 w-5" />
-            <span>Modules</span>
+            <span>
+              <Translate t="general.modules" />
+            </span>
           </TabsTrigger>
         </TabsList>
         <TabsContent value="worlds" className="p-4 overflow-auto">
@@ -115,7 +122,6 @@ export function MainContent({ worlds, systems }: MainContentProps) {
         </TabsContent>
         <TabsContent value="systems" className="p-4 overflow-auto">
           <NewSystemDialogTrigger />
-
           <ContentGrid items={systemsData} />
         </TabsContent>
         <TabsContent value="modules" className="p-4 overflow-auto">

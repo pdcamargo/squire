@@ -1,0 +1,13 @@
+{
+  "success.title": "Login successful!",
+  "success.description": "Redirecting to dashboard...",
+  "error.title": "Error!",
+  "error.description": "Invalid username or password. Please try again.",
+  "brand.name": "Acme Inc.",
+  "form.title": "Login to your account",
+  "form.subtitle": "Select your username below to login to your account",
+  "form.username.label": "Username",
+  "form.username.placeholder": "Select a user",
+  "form.password.label": "Password",
+  "form.submit": "Login"
+}
