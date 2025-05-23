@@ -1,0 +1,13 @@
+{
+  "success.title": "Login realizado com sucesso!",
+  "success.description": "Redirecionando para o painel...",
+  "error.title": "Erro!",
+  "error.description": "Nome de usuário ou senha inválidos. Por favor, tente novamente.",
+  "brand.name": "Acme Inc.",
+  "form.title": "Entre na sua conta",
+  "form.subtitle": "Selecione seu nome de usuário abaixo para entrar na sua conta",
+  "form.username.label": "Nome de usuário",
+  "form.username.placeholder": "Selecione um usuário",
+  "form.password.label": "Senha",
+  "form.submit": "Entrar"
+}

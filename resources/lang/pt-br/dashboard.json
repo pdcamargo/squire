@@ -1,0 +1,21 @@
+{
+  "brand.name": "Squire",
+  "search": "Buscar",
+  "notifications": "Notificações",
+  "settings": "Configurações",
+  "user.menu": "Menu do usuário",
+  "user.account": "Minha conta",
+  "user.profile": "Perfil",
+  "user.support": "Suporte",
+  "user.logout": "Sair",
+  "menu": "Menu",
+  "footer.version": "Squire VTT v2.5.0",
+  "footer.copyright": "© 2025 VTT Inc. Todos os direitos reservados.",
+  "footer.terms": "Termos de Serviço",
+  "footer.privacy": "Política de Privacidade",
+  "footer.contact": "Contato",
+  "content.empty": "Nenhum item encontrado.",
+  "content.image.alt": "Imagem do conteúdo para {name}",
+  "side.news.title": "Últimas Notícias",
+  "side.featured.title": "Conteúdo em Destaque"
+}

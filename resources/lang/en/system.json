@@ -1,0 +1,17 @@
+{
+  "dialog.new.title": "Create New System",
+  "dialog.new.description": "Add a new system to your Squire VTT. Fill in the details below.",
+  "dialog.new.error.title": "Error!",
+  "dialog.new.error.validation": "Please check the form for errors.",
+  "dialog.new.actions.cancel": "Cancel",
+  "dialog.new.actions.submit": "Create System",
+  "dialog.new.trigger": "Create New System",
+  "dialog.new.success": "System created successfully!",
+  "form.name.label": "Name",
+  "form.description.label": "Description",
+  "form.compatibility.label": "Compatibility",
+  "form.compatibility.min.label": "Min",
+  "form.compatibility.max.label": "Max",
+  "form.tags.label": "Tags",
+  "form.tags.placeholder": "Select tags"
+}

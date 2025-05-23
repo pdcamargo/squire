@@ -1,0 +1,19 @@
+{
+  "save": "Salvar",
+  "saving": "Salvando",
+  "cancel": "Cancelar",
+  "delete": "Excluir",
+  "deleting": "Excluindo",
+  "edit": "Editar",
+  "create": "Criar",
+  "creating": "Criando",
+  "search": "Buscar",
+  "filter": "Filtrar",
+  "apply": "Aplicar",
+  "applying": "Aplicando",
+  "reset": "Resetar",
+  "close": "Fechar",
+  "worlds": "Mundos",
+  "systems": "Sistemas",
+  "modules": "Módulos"
+}

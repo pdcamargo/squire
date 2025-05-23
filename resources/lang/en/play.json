@@ -1,3 +1,4 @@
 {
-  "hello": "Hello Playmode {name}!"
+  "hello": "Hello, {name}!",
+  "scenes": "Scenes"
 }

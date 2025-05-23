@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react'
 
+import { Translate } from '@/components/translate'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
@@ -55,7 +56,9 @@ export function SideContent() {
       {/* News Section */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Latest News</CardTitle>
+          <CardTitle className="text-xl">
+            <Translate t="dashboard.side.news.title" />
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           {newsItems.map((item) => (
@@ -81,7 +84,9 @@ export function SideContent() {
       {/* Featured Content Section */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Featured Content</CardTitle>
+          <CardTitle className="text-xl">
+            <Translate t="dashboard.side.featured.title" />
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           {featuredContent.map((item) => (

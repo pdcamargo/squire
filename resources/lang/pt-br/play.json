@@ -1,3 +1,4 @@
 {
-  "hello": "E aí Playmode??"
+  "hello": "Olá, {name}!",
+  "scenes": "Cenas"
 }

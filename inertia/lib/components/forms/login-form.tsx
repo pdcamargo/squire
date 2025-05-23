@@ -1,6 +1,7 @@
 import { SelectValue } from '@radix-ui/react-select'
 import { useFormContext } from 'react-hook-form'
 
+import { Translate } from '@/components/translate'
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -22,9 +23,11 @@ export function LoginForm({
   return (
     <form className={cn('flex flex-col gap-6', className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Login to your account</h1>
+        <h1 className="text-2xl font-bold">
+          <Translate t="login.form.title" />
+        </h1>
         <p className="text-balance text-sm text-muted-foreground">
-          Select your username below to login to your account
+          <Translate t="login.form.subtitle" />
         </p>
       </div>
       <div className="grid gap-6">
@@ -33,11 +36,13 @@ export function LoginForm({
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>
+                <Translate t="login.form.username.label" />
+              </FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a user" />
+                    <SelectValue placeholder={<Translate t="login.form.username.placeholder" />} />
                   </SelectTrigger>
                   <SelectContent>
                     {users?.map((user) => (
@@ -57,7 +62,9 @@ export function LoginForm({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>
+                <Translate t="login.form.password.label" />
+              </FormLabel>
               <FormControl>
                 <Input type="password" required {...field} />
               </FormControl>
@@ -66,7 +73,7 @@ export function LoginForm({
           )}
         />
         <Button type="submit" className="w-full">
-          Login
+          <Translate t="login.form.submit" />
         </Button>
       </div>
     </form>

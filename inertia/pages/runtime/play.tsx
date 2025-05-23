@@ -71,7 +71,9 @@ const Play = observer(({ title, views, scripts, scenes }: PageProps) => {
           <SidebarHeader></SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel>Scenes</SidebarGroupLabel>
+              <SidebarGroupLabel>
+                <Translate t="play.scenes" />
+              </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {scenes.map((scene) => (
