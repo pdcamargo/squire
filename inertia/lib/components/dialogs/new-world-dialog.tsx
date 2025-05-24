@@ -3,13 +3,15 @@ import { AlertCircle, Check, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+import { SystemType } from '#validators/system'
+
 import { isValidationError } from '@/api/client'
-import { useCreateSystemMutation } from '@/api/use-create-system-mutation'
+import { useCreateWorldMutation } from '@/api/use-create-world-mutation'
 import {
-  NewSystemForm,
-  newSystemFormSchema,
-  NewSystemFormValues,
-} from '@/components/forms/new-system-form'
+  NewWorldForm,
+  newWorldFormSchema,
+  NewWorldFormValues,
+} from '@/components/forms/new-world-form'
 import { Translate } from '@/components/translate'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -24,30 +26,27 @@ import {
 import { Form } from '@/components/ui/form'
 import { registerDialog, useDialog } from '@/hooks/use-dialog'
 
-export const useNewSystemDialog = () => useDialog(NewSystemDialog)
+export const useNewWorldDialog = () => useDialog(NewWorldDialog)
 
-export const NewSystemDialog = registerDialog(() => {
-  const disclosure = useNewSystemDialog()
+export const NewWorldDialog = registerDialog(({ systems }: { systems: SystemType[] }) => {
+  const disclosure = useNewWorldDialog()
 
-  const form = useForm<NewSystemFormValues>({
-    resolver: vineResolver(newSystemFormSchema),
+  const form = useForm<NewWorldFormValues>({
+    resolver: vineResolver(newWorldFormSchema),
     defaultValues: {
       name: '',
       description: '',
-      compatibility: {
-        min: '0.0.0',
-        max: '999.9.9',
-      },
+      system: systems[0].id,
     },
   })
 
-  const { mutate: createSystem, isError: isCreateSystemError, error } = useCreateSystemMutation()
+  const { mutate: createSystem, isError: isCreateSystemError, error } = useCreateWorldMutation()
 
-  async function onSubmit(values: NewSystemFormValues) {
+  async function onSubmit(values: NewWorldFormValues) {
     createSystem(values, {
       onSuccess: () => {
-        toast(<Translate t="system.dialog.new.success" />, {
-          id: 'system-created',
+        toast(<Translate t="world.dialog.new.success" />, {
+          id: 'world-created',
           duration: 5000,
           icon: <Check className="size-4" />,
           dismissible: true,
@@ -63,11 +62,11 @@ export const NewSystemDialog = registerDialog(() => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Translate t="system.dialog.new.title" />
+            <Translate t="world.dialog.new.title" />
           </DialogTitle>
 
           <DialogDescription>
-            <Translate t="system.dialog.new.description" />
+            <Translate t="world.dialog.new.description" />
           </DialogDescription>
         </DialogHeader>
 
@@ -75,7 +74,7 @@ export const NewSystemDialog = registerDialog(() => {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>
-              <Translate t="system.dialog.new.error.title" />
+              <Translate t="world.dialog.new.error.title" />
             </AlertTitle>
             <AlertDescription>
               {isValidationError(error) && (
@@ -92,7 +91,11 @@ export const NewSystemDialog = registerDialog(() => {
         )}
 
         <Form {...form}>
-          <NewSystemForm id="CREATE_NEW_SYSTEM_FORM" onSubmit={form.handleSubmit(onSubmit)} />
+          <NewWorldForm
+            id="CREATE_NEW_WORLD_FORM"
+            onSubmit={form.handleSubmit(onSubmit)}
+            systems={systems}
+          />
         </Form>
 
         <DialogFooter>
@@ -102,11 +105,11 @@ export const NewSystemDialog = registerDialog(() => {
               disclosure.hide()
             }}
           >
-            <Translate t="system.dialog.new.actions.cancel" />
+            <Translate t="world.dialog.new.actions.cancel" />
           </Button>
 
-          <Button form="CREATE_NEW_SYSTEM_FORM" type="submit">
-            <Translate t="system.dialog.new.actions.submit" />
+          <Button form="CREATE_NEW_WORLD_FORM" type="submit">
+            <Translate t="world.dialog.new.actions.submit" />
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -114,17 +117,17 @@ export const NewSystemDialog = registerDialog(() => {
   )
 })
 
-export const NewSystemDialogTrigger = () => {
-  const disclosure = useNewSystemDialog()
+export const NewWorldDialogTrigger = ({ systems }: { systems: SystemType[] }) => {
+  const disclosure = useNewWorldDialog()
 
   return (
     <Button
       onClick={() => {
-        disclosure.show()
+        disclosure.show({ systems })
       }}
     >
       <Plus />
-      <Translate t="system.dialog.new.trigger" />
+      <Translate t="world.dialog.new.trigger" />
     </Button>
   )
 }

@@ -9,6 +9,7 @@ import { Globe, Box, Puzzle } from 'lucide-react'
 import type DashboardController from '#controllers/dashboard_controller'
 
 import { NewSystemDialogTrigger } from '@/components/dialogs/new-system-dialog'
+import { NewWorldDialogTrigger } from '@/components/dialogs/new-world-dialog'
 import { Translate } from '@/components/translate'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -111,6 +112,8 @@ export function MainContent({ worlds, systems }: MainContentProps) {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="worlds" className="p-4 overflow-auto">
+          <NewWorldDialogTrigger systems={systems} />
+
           <ContentGrid
             items={worldsData}
             onClick={({ id }) => {

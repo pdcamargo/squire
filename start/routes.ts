@@ -20,6 +20,7 @@ router.get('/:world/assets/*', '#controllers/assets_controller.show').use(middle
 router
   .get('/:world/system/assets/*', '#controllers/assets_controller.showSystem')
   .use(middleware.auth())
+router.post('/worlds', '#controllers/worlds_controller.create')
 
 router.get('/:system/*', '#controllers/assets_controller.showSystemAsset')
 router.post('/systems', '#controllers/systems_controller.create')

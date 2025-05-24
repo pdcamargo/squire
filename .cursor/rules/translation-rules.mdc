@@ -1,0 +1,12 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+Whenever dealing with text (pages, backend messages, errors, components, etc), always do through translations using resources/lang/en + any other language folder existing there. So if a message was created to one language, it needs to be created on every other language as well.
+
+Translations JSON doesn't accept nested objects.
+
+Always follow other translation key patterns.
+
+Generic keywords (like Apply, Save, Cancel, Saving, Applying, Close, etc), needs to be put on general.json.

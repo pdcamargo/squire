@@ -1,3 +1,8 @@
+---
+description:
+globs:
+alwaysApply: true
+---
 This project uses Adonis with inertia.js and shadcn/ui. Therefore, there are some custom configuration that was done to make this project work.
 
 - Always respect the paths configured on `inertia\tsconfig.json`.

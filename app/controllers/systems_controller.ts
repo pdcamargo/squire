@@ -14,7 +14,7 @@ export default class SystemsController {
 
     await AppPath.ensureAppStructure()
 
-    if (!AppPath.checkSystemExists(systemId)) {
+    if (await AppPath.checkSystemExists(systemId)) {
       return response.badRequest({
         message: `System "${systemId}" already exists.`,
       })

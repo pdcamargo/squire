@@ -21,8 +21,12 @@ export default class AuthController {
     response.redirect().toPath(`/${world}/play`)
   }
 
-  public async loginPage({ inertia, params }: HttpContext) {
+  public async loginPage({ inertia, params, response }: HttpContext) {
     const { world } = params as { world: string }
+
+    if (!(await AppPath.checkWorldExists(world))) {
+      return response.notFound('World does not exist')
+    }
 
     await WorldHelper.runWorldMigrationsAndOptionalSeeders(world)
 
