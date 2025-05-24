@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import type AuthController from '#controllers/auth_controller'
 
-import { useLoginMutation } from '@/api/useLoginMutation'
+import { useLoginMutation } from '@/api/use-login-mutation'
 import { LoginForm } from '@/components/forms/login-form'
 import { Translate } from '@/components/translate'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'

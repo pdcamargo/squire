@@ -10,19 +10,9 @@ import AppPath from '#helpers/app_path'
 import SystemHelper from '#helpers/system_helper'
 import Utils from '#helpers/utils'
 import WorldScene from '#models/world_scene'
+import WorldUser from '#models/world_user'
 import { SystemType } from '#validators/system'
 import { WorldType } from '#validators/world'
-
-const worldManifestTemplate = `
-{
-  "id": "{{ world.id }}",
-  "name": "{{ world.name }}",
-  "description": "{{ world.description }}",
-  "system": "{{ world.system }}",
-  "lastPlayed": "{{ world.lastPlayed }}",
-  "lastUpdated": "{{ world.lastUpdated }}"
-}
-`
 
 type CreateWorldArgs = {
   name: string
@@ -56,20 +46,20 @@ export default class WorldHelper {
   public static async createWorld({ name, description, system }: CreateWorldArgs) {
     await AppPath.ensureAppStructure()
 
-    if (!AppPath.checkSystemExists(system)) {
+    if (!(await AppPath.checkSystemExists(system))) {
       throw new Error(`System "${system}" does not exist.`)
     }
 
     // ensure we don't have a world with the same name, and keep increasing a suffix
-    let worldPath = AppPath.worldPath(string.slug(name))
+    let worldPath = AppPath.worldPath(string.slug(name.toLowerCase()))
 
     let worldExists = await AppFS.checkPathExists(worldPath)
     let suffix = 1
 
-    let finalSlug = string.slug(name)
+    let finalSlug = string.slug(name.toLowerCase())
 
     while (worldExists) {
-      finalSlug = `${string.slug(name)}-${suffix}`
+      finalSlug = `${string.slug(name.toLowerCase())}-${suffix}`
       worldPath = AppPath.worldPath(finalSlug)
       worldExists = await AppFS.checkPathExists(worldPath)
       suffix++
@@ -77,18 +67,16 @@ export default class WorldHelper {
 
     await AppFS.ensureDirExists(worldPath)
 
-    const worldManifest = string.interpolate(worldManifestTemplate, {
-      world: {
-        id: finalSlug,
-        name,
-        description: description || '',
-        system,
-        lastPlayed: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
-      },
+    await AppFS.writeJson<WorldType>(path.join(worldPath, 'world.json'), {
+      id: finalSlug,
+      name,
+      description: description || '',
+      system,
+      lastPlayed: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      tags: [],
     })
-
-    await AppFS.writeFile(path.join(worldPath, 'world.json'), worldManifest)
 
     await AppFS.ensureDirExists(path.join(worldPath, 'data'))
     await AppFS.ensureDirExists(path.join(worldPath, 'assets'))
@@ -110,6 +98,10 @@ export default class WorldHelper {
     })
 
     await migrator.run()
+
+    await Utils.delay(250)
+
+    await this.runWorldMigrationsAndOptionalSeeders(finalSlug)
 
     return {
       path: worldPath,
@@ -255,9 +247,11 @@ export default class WorldHelper {
 
     if (migrator.error) {
       console.error('Migration error:', migrator.error)
+
+      throw new Error('Migration error')
     }
 
-    await Utils.delay(1000)
+    await Utils.delay(250)
 
     const scenes = await WorldScene.all()
 
@@ -281,6 +275,17 @@ export default class WorldHelper {
           },
         },
       ])
+    }
+
+    const users = await WorldUser.all()
+
+    if (users.length === 0) {
+      await WorldUser.create({
+        name: 'Admin',
+        username: 'admin',
+        password: 'admin',
+        avatar: null,
+      })
     }
 
     return migrator.migratedFiles

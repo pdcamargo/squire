@@ -1,0 +1,11 @@
+{
+  "dialog.new.title": "Criar Novo Mundo",
+  "dialog.new.description": "Adicione um novo mundo ao seu Squire VTT. Preencha os detalhes abaixo.",
+  "dialog.new.error.title": "Erro!",
+  "dialog.new.success": "Mundo criado com sucesso!",
+  "dialog.new.actions.cancel": "Cancelar",
+  "dialog.new.actions.submit": "Criar Mundo",
+  "dialog.new.trigger": "Criar Novo Mundo",
+  "form.name.label": "Nome",
+  "form.description.label": "Descrição"
+}
